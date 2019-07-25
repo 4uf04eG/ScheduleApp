@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item android:id="@+id/dark_mode_enabled"
+        android:title="@string/dark_mode_enabled"
+        app:showAsAction="ifRoom" />
+    <item android:id="@+id/dark_mode_disabled"
+        android:title="@string/dark_mode_disabled" />
+    <item android:id="@+id/dark_mode_auto"
+        android:title="@string/dark_mode_auto" />
+</menu>

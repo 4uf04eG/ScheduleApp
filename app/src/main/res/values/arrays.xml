@@ -1,0 +1,28 @@
+<resources>
+    <string-array name="dark_theme_modes">
+        <item>@string/dark_mode_enabled</item>
+        <item>@string/dark_mode_disabled</item>
+        <item>@string/dark_mode_auto</item>
+    </string-array>
+
+    <string-array name="dark_theme_mode_values">
+        <item>yes</item>
+        <item>no</item>
+        <item>auto</item>
+    </string-array>
+
+    <string-array name="languages">
+        <item>@string/language_en</item>
+        <item>@string/language_ru</item>
+    </string-array>
+
+    <string-array name="language_values">
+        <item>en</item>
+        <item>ru</item>
+    </string-array>
+
+    <string-array name="default_group_links">
+        <item>http://www.ulstu.ru/schedule/students/part1/raspisan.htm</item>
+        <item>http://www.ulstu.ru/schedule/students/part2/raspisan.htm</item>
+    </string-array>
+</resources>

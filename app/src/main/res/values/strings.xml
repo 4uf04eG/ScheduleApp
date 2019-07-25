@@ -1,0 +1,39 @@
+<resources>
+    <string name="app_name">Schedule</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_subtitle" translatable="false">android.studio@android.com</string>
+    <string name="nav_alarms">Alarms</string>
+    <string name="nav_online">Open Online</string>
+    <string name="nav_call_schedule">Call Schedule</string>
+    <string name="action_settings">Settings</string>
+    <string name="group_selection">Select Your Group</string>
+    <string name="groups_year">Year:</string>
+    <string name="connection_error">Could not load groups. Please check your internet connection</string>
+    <string name="retry_connection">Groups could not be loaded. Please check your internet connection and retry</string>
+    <string name="groups_retry">Retry</string>
+    <string name="preference_file_key" translatable="false">preferences</string>
+    <string name="call_schedule">
+        1st class: 8:00–9:30
+        \n2nd class: 9:40–11:10
+        \n3rd class: 11:30–13:00
+        \n4th class: 13:10–14:40
+        \n5th class: 14:50–16:20
+        \n6th class: 16:30–18:00
+        \n7th class: 18:10–19:40
+        \n8th class: 19:50–21:20
+    </string>
+    <string name="settings_language">Language</string>
+    <string name="language_en" translatable="false">English</string>
+    <string name="language_ru" translatable="false">Русский</string>
+    <string name="settings_dark_theme">Dark theme</string>
+    <string name="dark_mode_enabled">Enabled</string>
+    <string name="dark_mode_disabled">Disabled</string>
+    <string name="dark_mode_auto">Based on time of the day</string>
+    <string name="settings_color_change">Change primary color</string>
+    <string name="settings_color_title">Choose color</string>
+    <string name="confirmation">OK</string>
+    <string name="cancellation">Cancel</string>
+</resources>
+
+

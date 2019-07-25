@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Расписание</string>
+    <string name="navigation_drawer_open">Открыть навигационное меню</string>
+    <string name="navigation_drawer_close">Закрыть навигационное меню</string>
+    <string name="nav_alarms">Будильники</string>
+    <string name="nav_call_schedule">Расписание звонков</string>
+    <string name="nav_online">Открыть в браузере</string>
+    <string name="action_settings">Настройки</string>
+    <string name="group_selection">Выберите свою группу</string>
+    <string name="groups_year">Курс:</string>
+    <string name="connection_error">Не удалось загрузить группы. Пожалуйста, проверьте подключение к интернету</string>
+    <string name="retry_connection">Не удалось загрузить группы. Пожалуйста, проверьте подключение к интернету и попробуйте заново</string>
+    <string name="groups_retry">Обновить</string>
+    <string name="call_schedule">
+        1-ая пара: 8:00–9:30
+        \n2-ая пара: 9:40–11:10
+        \n3-ая пара: 11:30–13:00
+        \n4-ая пара: 13:10–14:40
+        \n5-ая пара: 14:50–16:20
+        \n6-ая пара: 16:30–18:00
+        \n7-ая пара: 18:10–19:40
+        \n8-ая пара: 19:50–21:20
+    </string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_dark_theme">Тёмная тема</string>
+    <string name="dark_mode_enabled">Включен</string>
+    <string name="dark_mode_disabled">Выключен</string>
+    <string name="dark_mode_auto">Относительно времени суток</string>
+    <string name="settings_color_change">Изменить основной цвет</string>
+    <string name="settings_color_title">Выберите цвет</string>
+    <string name="confirmation">Принять</string>
+    <string name="cancellation">Отменить</string>
+</resources>

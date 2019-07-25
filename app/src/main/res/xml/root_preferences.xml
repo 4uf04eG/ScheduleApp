@@ -1,0 +1,16 @@
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+        <ListPreference
+            app:entries="@array/dark_theme_modes"
+            app:entryValues="@array/dark_theme_mode_values"
+            app:key="dark_theme"
+            app:title="@string/settings_dark_theme"
+            app:useSimpleSummaryProvider="true" />
+
+        <ListPreference
+            app:entries="@array/languages"
+            app:entryValues="@array/language_values"
+            app:key="language"
+            app:title="@string/settings_language"
+            app:useSimpleSummaryProvider="true" />
+
+</androidx.preference.PreferenceScreen>
