@@ -14,17 +14,21 @@ public class LocaleHelper {
         updateResources(context, getLanguage(context));
     }
 
-
-    private static String getLanguage(Context context) {
-        String lang = StorageHelper.findStringInShared(context, SELECTED_LANGUAGE);
-
-        return lang != null ? lang : getDefaultLocale(context).toString();
+    public static void initializeLocale(Context context) {
+        StorageHelper.addToShared(context, SELECTED_LANGUAGE, getDefaultLocale(context).toString());
     }
+
 
     public static void setLocale(Context context, String language) {
         StorageHelper.addToShared(context, SELECTED_LANGUAGE, language);
 
         updateResources(context, language);
+    }
+
+    private static String getLanguage(Context context) {
+        String lang = StorageHelper.findStringInShared(context, SELECTED_LANGUAGE);
+
+        return lang != null ? lang : getDefaultLocale(context).toString();
     }
 
     @SuppressWarnings("deprecation")
@@ -43,7 +47,6 @@ public class LocaleHelper {
 
         Configuration configuration = resources.getConfiguration();
         configuration.locale = locale;
-
 
         resources.updateConfiguration(configuration, resources.getDisplayMetrics());
     }

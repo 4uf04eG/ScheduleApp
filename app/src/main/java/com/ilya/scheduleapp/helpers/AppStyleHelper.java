@@ -1,26 +1,38 @@
 package com.ilya.scheduleapp.helpers;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
-import androidx.core.graphics.ColorUtils;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.widget.Toolbar;
 import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.style.ForegroundColorSpan;
+import android.view.Window;
+import android.view.WindowManager;
+
+import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.graphics.ColorUtils;
 
 import com.ilya.scheduleapp.R;
 
 public class AppStyleHelper {
     private static final String COLOR_SCHEME = "default_color";
+    private static final String DARK_THEME_TYPE = "dark_theme";
 
     private enum ColorType {
         WHITE,
         BLACK
+    }
+
+    public static void initializeStyle(Context context) {
+        int color = context.getResources().getColor(R.color.colorPrimary);
+
+        StorageHelper.addToShared(context, COLOR_SCHEME, color);
+        StorageHelper.addToShared(context, DARK_THEME_TYPE, "no");
     }
 
     public static void restoreMainStyle(Activity activity, Toolbar toolbar) {
@@ -28,6 +40,8 @@ public class AppStyleHelper {
 
         if (color != Integer.MIN_VALUE)
             setStyle(activity, color, toolbar);
+        else
+            setStyle(activity, activity.getResources().getColor(R.color.colorPrimary), toolbar);
     }
 
     public static int getDefaultTheme(Activity activity) {
@@ -44,9 +58,7 @@ public class AppStyleHelper {
 
         if (color != Integer.MIN_VALUE && actionBar != null) {
             actionBar.setBackgroundDrawable(new ColorDrawable(color));
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-                activity.getWindow().setStatusBarColor(generateDarkenColor(color));
+            setStatusBarColor(activity, color);
         }
     }
 
@@ -59,9 +71,7 @@ public class AppStyleHelper {
     public static void setStyleDynamically(Activity activity, int color, ActionBar actionBar) {
         if (actionBar == null) return;
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-            activity.getWindow().setStatusBarColor(generateDarkenColor(color));
-
+        setStatusBarColor(activity, color);
         actionBar.setBackgroundDrawable(new ColorDrawable(color));
 
         int titleColor = generateContrastColorId(color);
@@ -84,10 +94,8 @@ public class AppStyleHelper {
     private static void setStyle(Activity activity, int color, Toolbar toolbar) {
         if (toolbar == null) return;
 
-        toolbar.setBackgroundDrawable(new ColorDrawable(color));
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
-           activity.getWindow().setStatusBarColor(generateDarkenColor(color));
+        toolbar.setBackgroundColor(color);
+        setStatusBarColor(activity, color);
 
         if (generateContrastColorType(color) == ColorType.BLACK)
             toolbar.getContext().setTheme(R.style.ThemeOverlay_AppCompat_Light);
@@ -117,7 +125,7 @@ public class AppStyleHelper {
         float[] hsv = new float[3];
 
         Color.colorToHSV(color, hsv);
-        hsv[2] *= 0.8f;
+       // hsv[2] *= 0.8f;
 
         return Color.HSVToColor(hsv);
     }
@@ -127,5 +135,15 @@ public class AppStyleHelper {
             return activity.getResources().getColor(R.color.gray);
 
         return activity.getResources().getColor(textColor);
+    }
+
+    private static void setStatusBarColor(Activity activity, int color) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = activity.getWindow();
+
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(color);
+        }
     }
 }

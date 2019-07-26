@@ -69,5 +69,6 @@ public class ScheduleParser extends AsyncTask<Void, Integer, ScheduleContainer> 
     protected void onPostExecute(ScheduleContainer scheduleContainer) {
         super.onPostExecute(scheduleContainer);
         listener.addScheduleToView(scheduleContainer);
+        listener.storeSchedule(scheduleContainer);
     }
 }

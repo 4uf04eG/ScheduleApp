@@ -2,16 +2,14 @@ package com.ilya.scheduleapp.activities;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.core.app.NavUtils;
-import androidx.preference.Preference;
-import androidx.preference.PreferenceFragmentCompat;
 
 import com.flask.colorpicker.ColorPickerView;
 import com.flask.colorpicker.OnColorChangedListener;
@@ -25,6 +23,8 @@ import com.ilya.scheduleapp.helpers.StorageHelper;
 public class SettingsActivity extends AppCompatActivity {
     private static final String DARK_THEME_TYPE = "dark_theme";
     private static final String SELECTED_LANGUAGE = "language";
+
+    private SharedPreferences.OnSharedPreferenceChangeListener listener;
 
     @Override
     public void onBackPressed() {
@@ -42,10 +42,12 @@ public class SettingsActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_settings);
         setTitle(R.string.action_settings);
+/*
         getSupportFragmentManager()
                 .beginTransaction()
                 .replace(R.id.settings, new SettingsActivity.SettingsFragment())
                 .commit();
+*/
         AppStyleHelper.setDefaultBackground(this, getSupportActionBar());
     }
 
@@ -53,8 +55,8 @@ public class SettingsActivity extends AppCompatActivity {
         StorageHelper.clearShared(this);
     }
 
-    private static void setLanguage(SettingsActivity activity,String value) {
-        LocaleHelper.setLocale(activity, value);
+    private static void setLanguage(SettingsActivity activity) {
+        LocaleHelper.loadLocale(activity);
         activity.restartActivity();
     }
 
@@ -74,8 +76,8 @@ public class SettingsActivity extends AppCompatActivity {
                 break;
         }
 
-        StorageHelper.addToShared(activity, DARK_THEME_TYPE, type);
-        activity.restartActivity();
+       // StorageHelper.addToShared(activity, DARK_THEME_TYPE, type);
+   //     activity.restartActivity();
     }
 
     public void showColorPicker(final View view) {
@@ -120,44 +122,48 @@ public class SettingsActivity extends AppCompatActivity {
         dialog.show();
     }
 
-
+/*
     public static class SettingsFragment extends PreferenceFragmentCompat {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.root_preferences, rootKey);
         }
-
-        @Override
-        public void onDisplayPreferenceDialog(Preference preference) {
-            super.onDisplayPreferenceDialog(preference);
-            if(preference.getKey().equals(DARK_THEME_TYPE))
-                preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        Log.d("dark_theme", (String) newValue);
-                        setDarkTheme((SettingsActivity) getActivity(), (String) newValue);
-                        return true;
-                    }
-                });
-            else if (preference.getKey().equals(SELECTED_LANGUAGE)) {
-                preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                    @Override
-                    public boolean onPreferenceChange(Preference preference, Object newValue) {
-                        Log.d("language", (String) newValue);
-                        setLanguage((SettingsActivity) getActivity(), (String) newValue);
-                        return true;
-                    }
-                });
-            }
-        }
-
-
     }
 
+    @Override
+    public void onStart() {
+        super.onStart();
 
+        listener = new SettingsListener(this);
+
+        PreferenceManager.getDefaultSharedPreferences(this).
+                registerOnSharedPreferenceChangeListener(listener);
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        PreferenceManager.getDefaultSharedPreferences(this).
+                unregisterOnSharedPreferenceChangeListener(listener);
+    }
+
+    private class SettingsListener implements SharedPreferences.OnSharedPreferenceChangeListener {
+        private SettingsActivity activity;
+
+        private SettingsListener(SettingsActivity activity) { this.activity = activity; }
+
+        @Override
+        public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+            if (key.equals(DARK_THEME_TYPE))
+                setDarkTheme(activity, StorageHelper.findStringInShared(sharedPreferences, key));
+            if (key.equals(SELECTED_LANGUAGE))
+                setLanguage(activity);
+        }
+    }
+*/
     private void restartActivity() {
-        finish();
         startActivity(getIntent());
+        finish();
         overridePendingTransition(0, 0);
     }
 }

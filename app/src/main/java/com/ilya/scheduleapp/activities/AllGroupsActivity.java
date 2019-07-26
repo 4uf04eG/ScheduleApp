@@ -16,6 +16,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import com.ilya.scheduleapp.R;
 import com.ilya.scheduleapp.adapters.GroupsAdapter;
 import com.ilya.scheduleapp.containers.GroupsContainer;
+import com.ilya.scheduleapp.helpers.AppStyleHelper;
 import com.ilya.scheduleapp.helpers.StorageHelper;
 import com.ilya.scheduleapp.listeners.GroupsAsyncTaskListener;
 import com.ilya.scheduleapp.parsers.GroupsParser;
@@ -33,10 +34,14 @@ public class AllGroupsActivity extends AppCompatActivity implements GroupsAsyncT
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        int theme = AppStyleHelper.getDefaultTheme(this);
+
+        if (theme != Integer.MIN_VALUE)
+            setTheme(theme);
+
         setContentView(R.layout.activity_all_groups);
         setTitle(R.string.group_selection);
-
-       // ((ProgressBar) findViewById(R.id.groups_progress_bar)).getIndeterminateDrawable().setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
+        AppStyleHelper.setDefaultBackground(this, getSupportActionBar());
 
         groupsView = findViewById(R.id.groups);
         groupsView.setLayoutManager(new LinearLayoutManager(this));
@@ -131,8 +136,6 @@ public class AllGroupsActivity extends AppCompatActivity implements GroupsAsyncT
             showAlertDialog();
         else
             finish();
-
-
     }
 
     public void onRefreshButtonClick(View view) {

@@ -1,10 +1,8 @@
 package com.ilya.scheduleapp.activities;
 
-
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,17 +22,16 @@ import com.ilya.scheduleapp.R;
 import com.ilya.scheduleapp.adapters.ScheduleAdapter;
 import com.ilya.scheduleapp.containers.ScheduleContainer;
 import com.ilya.scheduleapp.helpers.AppStyleHelper;
+import com.ilya.scheduleapp.helpers.LocaleHelper;
 import com.ilya.scheduleapp.helpers.StorageHelper;
 import com.ilya.scheduleapp.listeners.ScheduleAsyncTaskListener;
 import com.ilya.scheduleapp.parsers.ScheduleParser;
 
-import java.util.Calendar;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ScheduleAsyncTaskListener {
     private static final String GROUP_LINKS = "group_links";
-    private static final String DARK_THEME_TYPE = "dark_theme";
     private static final String SCHEDULE_LINK = "schedule_link";
     private static final String NUM_OF_WEEK = "current_week";
 
@@ -46,7 +43,7 @@ public class MainActivity extends AppCompatActivity
 
         RecyclerView view = findViewById(R.id.schedule_view);
         view.setLayoutManager(new LinearLayoutManager(this));
-        view.setAdapter(new ScheduleAdapter());
+        view.setAdapter(new ScheduleAdapter(this));
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         AppStyleHelper.restoreMainStyle(this, toolbar);
@@ -64,15 +61,16 @@ public class MainActivity extends AppCompatActivity
         handleUrlIntent();
 
         if (StorageHelper.findStringInShared(this, SCHEDULE_LINK) == null) {
-            String[] urls = getResources().getStringArray(R.array.default_group_links);
-
-            StorageHelper.addToShared(this, GROUP_LINKS, urls);
-            StorageHelper.addToShared(this, DARK_THEME_TYPE, "no");
-            StorageHelper.addToShared(this, NUM_OF_WEEK, 1);
+            setInitialParameters();
             startActivityForResult(new Intent(this, AllGroupsActivity.class), 0);
-        }
+        } else {
+            ScheduleContainer schedule = StorageHelper.findScheduleInShared(this);
 
-        tryLoadSchedule();
+            if (schedule == null)
+                tryLoadSchedule();
+            else
+                addScheduleToView(schedule);
+        }
     }
 
     @Override
@@ -133,16 +131,26 @@ public class MainActivity extends AppCompatActivity
         ScheduleAdapter adapter = (ScheduleAdapter) view.getAdapter();
         int numOfWeek = StorageHelper.findIntInShared(this, NUM_OF_WEEK);
 
-        if(schedule.size() != 0 && adapter != null && numOfWeek != Integer.MIN_VALUE)
+        if(numOfWeek < schedule.size() && adapter != null && numOfWeek != Integer.MIN_VALUE)
             adapter.refreshData(schedule.get(numOfWeek));
+    }
 
-        Calendar c = Calendar.getInstance();
-        c.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
-
-        Log.d("Date" , c.get(Calendar.DAY_OF_MONTH) + "");
+    @Override
+    public void storeSchedule(ScheduleContainer scheduleContainer) {
+        StorageHelper.addScheduleToShared(this, scheduleContainer);
     }
 
     public void onScheduleItemClicked(View view) { }
+
+    private void setInitialParameters() {
+        String[] urls = getResources().getStringArray(R.array.default_group_links);
+
+        StorageHelper.addToShared(this, GROUP_LINKS, urls);
+        StorageHelper.addToShared(this, NUM_OF_WEEK, 1);
+
+        AppStyleHelper.initializeStyle(this);
+        LocaleHelper.initializeLocale(this);
+    }
 
     private void openLinkInBrowser() {
         String link = StorageHelper.findStringInShared(this, SCHEDULE_LINK);
