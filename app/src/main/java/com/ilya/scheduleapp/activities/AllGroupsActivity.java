@@ -1,12 +1,12 @@
 package com.ilya.scheduleapp.activities;
 
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -26,53 +26,85 @@ import java.util.concurrent.ExecutionException;
 public class AllGroupsActivity extends AppCompatActivity implements GroupsAsyncTaskListener {
     private static final String GROUP_NAME = "group_name";
     private static final String SCHEDULE_LINK = "schedule_link";
+    private static final String ARG_SAVED_GROUPS = "saved_groups";
+    private static final String ARG_RETRY_BUTTON_STATUS = "retry_button_status";
 
     private SwipeRefreshLayout refreshLayout;
     private RecyclerView groupsView;
     private GroupsContainer foundGroups;
+    private Boolean isGroupChange;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        int theme = AppStyleHelper.getDefaultTheme(this);
-
-        if (theme != Integer.MIN_VALUE)
-            setTheme(theme);
-
         setContentView(R.layout.activity_all_groups);
         setTitle(R.string.group_selection);
-        AppStyleHelper.setDefaultBackground(this, getSupportActionBar());
+        AppStyleHelper.restoreAllGroupsStyle(this, getSupportActionBar());
 
         groupsView = findViewById(R.id.groups);
         groupsView.setLayoutManager(new LinearLayoutManager(this));
         groupsView.setAdapter(new GroupsAdapter());
 
         refreshLayout = findViewById(R.id.swipe_refresh);
-        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-            @Override
-            public void onRefresh() {
-                tryLoadAllGroups();
-            }
-        });
+        refreshLayout.setOnRefreshListener(this::tryLoadAllGroups);
 
-        tryLoadAllGroups();
+        isGroupChange = getIntent().getBooleanExtra("change_group", false);
+
+        findViewById(R.id.retry_refresh_button).setOnClickListener(v -> onRefreshButtonClick());
+
+        if (!isGroupChange && getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
+
+        if (savedInstanceState != null) {
+            GroupsContainer savedGroups = savedInstanceState.getParcelable(ARG_SAVED_GROUPS);
+            foundGroups = savedGroups;
+
+            if (foundGroups == null || foundGroups.size() == 0) {
+                if (savedInstanceState.getBoolean(ARG_RETRY_BUTTON_STATUS)) {
+                    findViewById(R.id.retry_refresh_button).setVisibility(View.VISIBLE);
+                    findViewById(R.id.all_progress_bar).setVisibility(View.GONE);
+                } else {
+                    tryLoadAllGroups();
+                }
+            } else {
+                addGroupsToView(savedGroups);
+                finishRefreshing();
+            }
+        } else {
+            tryLoadAllGroups();
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        boolean isVisible = findViewById(R.id.retry_refresh_button).getVisibility() == View.VISIBLE;
+
+        outState.putParcelable(ARG_SAVED_GROUPS, foundGroups);
+        outState.putBoolean(ARG_RETRY_BUTTON_STATUS, isVisible);
     }
 
     @Override
     public void onBackPressed() {
-        moveTaskToBack(true);
+        if (!isGroupChange) {
+            moveTaskToBack(true);
+        } else {
+            super.onBackPressed();
+        }
     }
 
     @Override
-    public void showToast(int stringId, int duration) {
-        Toast.makeText(this, getString(stringId), duration).show();
+    public void showErrorToast() {
+        Toast.makeText(this,
+                getString(R.string.connection_error), Toast.LENGTH_LONG).show();
     }
 
     @Override
     public void showRetryMessage() {
         if (groupsView.getChildCount() == 0) {
             refreshLayout.setEnabled(false);
-            findViewById(R.id.groups_retry_refresh).setVisibility(View.VISIBLE);
+            findViewById(R.id.retry_refresh_button).setVisibility(View.VISIBLE);
         }
     }
 
@@ -80,31 +112,48 @@ public class AllGroupsActivity extends AppCompatActivity implements GroupsAsyncT
     public void finishRefreshing() {
         refreshLayout.setEnabled(true);
         refreshLayout.setRefreshing(false);
-        findViewById(R.id.groups_progress_bar).setVisibility(View.GONE);
-        findViewById(R.id.groups_retry_refresh).setVisibility(View.GONE);
+        findViewById(R.id.all_progress_bar).setVisibility(View.GONE);
+        findViewById(R.id.retry_refresh_button).setVisibility(View.GONE);
     }
 
     @Override
     public void addGroupsToView(GroupsContainer groups) {
         GroupsAdapter adapter = (GroupsAdapter) groupsView.getAdapter();
 
-        if (adapter != null)
-            adapter.refreshData(groups.toLinearList());
+        if (adapter != null) {
+            adapter.refreshData(groups.toSortedLinearList());
+        }
+    }
+
+    public void writeGroupToSharedStorage(View view) {
+        String name = ((TextView) view).getText().toString();
+
+        if (isGroupChange) StorageHelper.clearSchedule(this);
+
+        StorageHelper.addToShared(this, GROUP_NAME, name);
+        StorageHelper.addToShared(this, SCHEDULE_LINK, foundGroups.findLink(name));
+
+        if (StorageHelper.findStringInShared(this, SCHEDULE_LINK) == null) {
+            showAlertDialog();
+        } else finish();
+    }
+
+    public void onRefreshButtonClick() {
+        findViewById(R.id.all_progress_bar).setVisibility(View.VISIBLE);
+        findViewById(R.id.retry_refresh_button).setVisibility(View.GONE);
+        tryLoadAllGroups();
     }
 
     private void tryLoadAllGroups() {
         final GroupsParser sg = new GroupsParser(this);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    foundGroups = sg.execute().get();
-                } catch (InterruptedException e) {
-                    Log.d("HandledInterruptedE", e.getMessage());
-                } catch (ExecutionException e) {
-                    Log.d("HandledExecutionE", e.getMessage());
-                }
+        new Thread(() -> {
+            try {
+                foundGroups = sg.execute().get();
+            } catch (InterruptedException e) {
+                Log.d("HandledInterruptedE", e.getMessage());
+            } catch (ExecutionException e) {
+                Log.d("HandledExecutionE", e.getMessage());
             }
         }).start();
     }
@@ -115,32 +164,10 @@ public class AllGroupsActivity extends AppCompatActivity implements GroupsAsyncT
         builder.setCancelable(true);
         builder.setTitle("Internal error");
         builder.setMessage("Please select another group");
-
-        builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+        builder.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
 
         builder.show();
     }
 
-    public void writeGroupToSharedStorage(View view) {
-        String name = ((TextView) view).getText().toString();
 
-        StorageHelper.addToShared(this, GROUP_NAME, name);
-        StorageHelper.addToShared(this, SCHEDULE_LINK, foundGroups.findLink(name));
-
-        if (StorageHelper.findStringInShared(this, SCHEDULE_LINK) == null)
-            showAlertDialog();
-        else
-            finish();
-    }
-
-    public void onRefreshButtonClick(View view) {
-        findViewById(R.id.groups_progress_bar).setVisibility(View.VISIBLE);
-        findViewById(R.id.groups_retry_refresh).setVisibility(View.GONE);
-        tryLoadAllGroups();
-    }
 }

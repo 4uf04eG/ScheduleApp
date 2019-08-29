@@ -33,10 +33,11 @@ public class LocaleHelper {
 
     @SuppressWarnings("deprecation")
     private static Locale getDefaultLocale(Context context) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             return context.getResources().getConfiguration().getLocales().get(0);
-        else
+        } else {
             return context.getResources().getConfiguration().locale;
+        }
     }
 
     private static void updateResources(Context context, String language) {

@@ -1,10 +1,9 @@
 package com.ilya.scheduleapp.containers;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class Week {
-    private List<List<String>> data;
+    private final ArrayList<ArrayList<ClassData>> data;
     private int currentDay;
 
     public Week() {
@@ -14,19 +13,23 @@ public class Week {
 
     void add(String value) {
         while (currentDay >= size())
-            data.add(new ArrayList<String>());
+            data.add(new ArrayList<>());
 
-        data.get(currentDay).add(value);
+        data.get(currentDay).add(new ClassData(value));
     }
 
     void switchToNextDay() {
         while (currentDay >= size())
-            data.add(new ArrayList<String>());
+            data.add(new ArrayList<>());
 
         currentDay++;
     }
 
-    public List<String> get(int index) { return data.get(index); }
+    public ArrayList<ClassData> get(int index) {
+        return data.get(index);
+    }
 
-    public int size() { return data.size(); }
+    public int size() {
+        return data.size();
+    }
 }

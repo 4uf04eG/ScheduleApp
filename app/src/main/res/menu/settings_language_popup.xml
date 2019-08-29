@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:id="@+id/language_english"
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/language_english"
         android:title="@string/language_en"
         app:showAsAction="ifRoom" />
-    <item android:id="@+id/language_russian"
+    <item
+        android:id="@+id/language_russian"
         android:title="@string/language_ru" />
 </menu>

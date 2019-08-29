@@ -3,12 +3,13 @@ package com.ilya.scheduleapp.adapters;
 
 import android.graphics.Color;
 import android.graphics.PorterDuff;
-import androidx.annotation.NonNull;
-import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.ilya.scheduleapp.R;
 
@@ -21,28 +22,24 @@ import java.util.Random;
 public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder> {
     private static List<String> groups;
 
-    static class ViewHolder extends RecyclerView.ViewHolder {
-        private final TextView parent;
-        private final View arrow;
-
-        ViewHolder(final View itemView) {
-            super(itemView);
-            parent = itemView.findViewById(R.id.parent);
-            arrow = itemView.findViewById(R.id.image_arrow);
-        }
+    public GroupsAdapter() {
+        groups = new ArrayList<>();
     }
 
-    public GroupsAdapter() { groups = new ArrayList<>(); }
+    public GroupsAdapter(List<String> groups) {
+        GroupsAdapter.groups = groups;
+    }
 
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == 0)
+        if (viewType == 0) {
             return new ViewHolder(LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.groups_item, parent, false));
+                    .inflate(R.layout.item_groups, parent, false));
+        }
 
         return new ViewHolder(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.groups_header, parent, false));
+                .inflate(R.layout.header_groups, parent, false));
     }
 
     @Override
@@ -61,25 +58,32 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
             int index = Integer.parseInt(Character.toString(firstChar)) - 1;
             int curColor;
 
-            if (index > 5)
+            if (index > 5) {
                 curColor = colors.get(new Random().nextInt(5));
-            else
+            } else {
                 curColor = colors.get(index);
+            }
 
             String year = holder.itemView.getResources().getString(R.string.groups_year);
             holder.parent.setText(String.format(Locale.ENGLISH, "%c %s", firstChar, year));
             holder.parent.setBackgroundColor(curColor);
             holder.arrow.getBackground().setColorFilter(curColor, PorterDuff.Mode.SRC_ATOP);
-        } else
+        } else {
             holder.parent.setText(groups.get(position));
+        }
     }
 
     @Override
-    public int getItemCount() { return groups.size(); }
+    public int getItemCount() {
+        return groups.size();
+    }
 
+    //TODO: Write tests to check if it really updates data. Yes, it should but i've never checked
     public void refreshData(List<String> newData) {
-        groups = newData;
-        notifyDataSetChanged();
+        if (newData != null) {
+            groups = newData;
+            notifyDataSetChanged();
+        }
     }
 
     private List<Integer> generateHeaderColors() {
@@ -90,5 +94,16 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
                 Color.parseColor("#008f5a"),
                 Color.parseColor("#c5037d"),
                 Color.parseColor("#8dbb25"));
+    }
+
+    static class ViewHolder extends RecyclerView.ViewHolder {
+        private final TextView parent;
+        private final View arrow;
+
+        ViewHolder(final View itemView) {
+            super(itemView);
+            parent = itemView.findViewById(R.id.parent);
+            arrow = itemView.findViewById(R.id.image_arrow);
+        }
     }
 }

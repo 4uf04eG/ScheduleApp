@@ -5,7 +5,7 @@ import com.ilya.scheduleapp.containers.GroupsContainer;
 public interface GroupsAsyncTaskListener {
     void addGroupsToView(GroupsContainer result);
 
-    void showToast(int stringId, int duration);
+    void showErrorToast();
 
     void finishRefreshing();
 

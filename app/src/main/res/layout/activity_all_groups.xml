@@ -1,46 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.swiperefreshlayout.widget.SwipeRefreshLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipe_refresh"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:tr_enable_loadmore="false"
     android:enabled="false">
 
-<RelativeLayout
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/groups"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:overScrollMode="never" />
-
-    <include layout="@layout/groups_progress_bar"/>
-
     <LinearLayout
-        android:id="@+id/groups_retry_refresh"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
-        android:orientation="vertical"
-        android:visibility="gone">
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="200dp"
-            android:layout_height="wrap_content"
-            android:text="@string/retry_connection"
-            android:gravity="center_horizontal"
-            android:textSize="16sp" />
+        <include layout="@layout/button_retry"
+            android:layout_weight="1" />
 
-        <Button
+        <include layout="@layout/progress_bar_all"
+            android:layout_weight="1"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/groups"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/groups_retry"
-            android:onClick="onRefreshButtonClick" />
+            android:overScrollMode="never" />
     </LinearLayout>
-
-</RelativeLayout>
 
 </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>

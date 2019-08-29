@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ScheduleContainer implements Serializable {
-    private List<Week> schedule;
+    private final List<Week> schedule;
     private int currentWeek;
 
     public ScheduleContainer() {
@@ -27,9 +27,15 @@ public class ScheduleContainer implements Serializable {
         schedule.get(currentWeek).switchToNextDay();
     }
 
-    public Week get(int index) { return schedule.get(index); }
+    public Week get(int index) {
+        return schedule.get(index);
+    }
 
-    public void switchToNextWeek() { currentWeek++; }
+    public void switchToNextWeek() {
+        currentWeek++;
+    }
 
-    public int size() { return schedule.size(); }
+    public int size() {
+        return schedule.size();
+    }
 }
