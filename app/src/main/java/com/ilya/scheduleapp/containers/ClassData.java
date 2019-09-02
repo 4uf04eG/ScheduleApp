@@ -45,7 +45,7 @@ public class ClassData implements Parcelable {
         }
     }
 
-    ClassData(Parcel in) {
+    private ClassData(Parcel in) {
         position = in.readString();
         type = in.readString();
         names = in.createStringArray();
@@ -93,7 +93,7 @@ class Patterns {
     private static final String type = "(\\p{L}+)."; //Example: пр.
     private static final String name = "([-\\p{L}\\d.,()/ ]+?)\\s?"; //Example: Физика - 1 п/г
     private static final String teacher = "([\\p{L}\\d]+ \\p{L} \\p{L}|(?<=\\s)\\p{L}{2,} \\p{L}{2,}|ПрепАДП)?"; //Example: Петров П П
-    private static final String classRoom = "\\s(\\d\\s?[-_]\\s?[\\p{L}\\d/]+)"; //Example: 2-202
+    private static final String classRoom = "\\s(\\d\\s?[-_]\\s?[\\p{L}\\d/.]+)"; //Example: 2-202
     private static final String secondName = "(?:(?:\\s([-\\p{L}/.,()/ ]+?))?\\s";
     private static final String secondClassRoom = classRoom + ")?";
 

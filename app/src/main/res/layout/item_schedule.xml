@@ -19,12 +19,13 @@
             android:id="@+id/schedule_item_time"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:layout_marginLeft="@dimen/schedule_item_margin"
             android:layout_marginStart="@dimen/schedule_item_margin"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             android:textSize="19sp"
             android:textAlignment="center"
+            android:gravity="center"
             android:lines="2" />
 
         <LinearLayout
@@ -44,7 +45,9 @@
                 android:lineSpacingMultiplier="0.8"
                 android:textSize="12sp"
                 android:textStyle="bold"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:gravity="center"
+                android:fontFamily="@font/roboto_medium" />
 
         </LinearLayout>
 
@@ -62,13 +65,13 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="@dimen/schedule_item_margin"
                 android:textStyle="bold"
-                android:textSize="17sp"
-                android:fontFamily="@font/raleway_light" />
+                android:textSize="17sp" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:weightSum="20">
 
                 <TextView
@@ -76,16 +79,16 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="12"
-                    android:drawableLeft="@drawable/schedule_ic_teacher_24dp"
-                    android:drawableStart="@drawable/schedule_ic_teacher_24dp" />
+                    android:drawableLeft="@drawable/more_ic_teacher_24dp"
+                    android:drawableStart="@drawable/more_ic_teacher_24dp" />
 
                 <TextView
                     android:id="@+id/schedule_item_class_room"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="8"
-                    android:drawableLeft="@drawable/schedule_ic_place_24dp"
-                    android:drawableStart="@drawable/schedule_ic_place_24dp" />
+                    android:drawableLeft="@drawable/more_ic_place_24dp"
+                    android:drawableStart="@drawable/more_ic_place_24dp" />
 
             </LinearLayout>
 
@@ -105,13 +108,13 @@
                 android:layout_marginBottom="@dimen/schedule_item_margin"
                 android:textStyle="bold"
                 android:textSize="17sp"
-                android:visibility="gone"
-                android:fontFamily="@font/raleway_light" />
+                android:visibility="gone" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:gravity="center_vertical"
                 android:weightSum="20">
 
                 <TextView
@@ -119,8 +122,8 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="12"
-                    android:drawableLeft="@drawable/schedule_ic_teacher_24dp"
-                    android:drawableStart="@drawable/schedule_ic_teacher_24dp"
+                    android:drawableLeft="@drawable/more_ic_teacher_24dp"
+                    android:drawableStart="@drawable/more_ic_teacher_24dp"
                     android:visibility="gone" />
 
                 <TextView
@@ -128,11 +131,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="8"
-                    android:drawableLeft="@drawable/schedule_ic_place_24dp"
-                    android:drawableStart="@drawable/schedule_ic_place_24dp"
+                    android:drawableLeft="@drawable/more_ic_place_24dp"
+                    android:drawableStart="@drawable/more_ic_place_24dp"
                     android:visibility="gone" />
 
             </LinearLayout>
+
         </LinearLayout>
+
     </LinearLayout>
+
 </androidx.cardview.widget.CardView>

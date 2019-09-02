@@ -45,7 +45,7 @@ public class ScheduleParser extends AsyncTask<Void, Integer, ScheduleContainer> 
      * call schedule and days of week from cells with schedule.
      * If it matches that regex then class count is increased and if it's not empty
      * string containing current class with count added to container.
-     * <p>
+     *
      * Switching days in container occurs only if class count is more than 5.
      * It's needed to ignore rows containing empty cells which are not part of a schedule
      *

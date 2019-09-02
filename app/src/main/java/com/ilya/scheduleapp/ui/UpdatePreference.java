@@ -80,13 +80,13 @@ public class UpdatePreference extends ListPreference {
     private void replaceUpdateTask(int value) {
         switch (UpdateFrequencies.toEnum(value)) {
             case EVERY_DAY:
-                BackgroundHelper.replaceUpdateTask(getContext(), 1);
+                BackgroundHelper.registerUpdateTask(getContext(), 1);
                 break;
             case EVERY_WEEK:
-                BackgroundHelper.replaceUpdateTask(getContext(), 7);
+                BackgroundHelper.registerUpdateTask(getContext(), 7);
                 break;
             case EVERY_MONTH:
-                BackgroundHelper.replaceUpdateTask(getContext(), 30);
+                BackgroundHelper.registerUpdateTask(getContext(), 30);
                 break;
             case NEVER:
                 BackgroundHelper.removeUpdateTask(getContext());

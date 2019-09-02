@@ -8,30 +8,34 @@
             app:key="open_online"
             app:title="@string/nav_online" />
 
-        <Preference
-            app:icon="@drawable/settings_ic_arrow_back_24dp"
-            app:key="clear_shared"
-            app:title="Clear shared" />
     </PreferenceCategory>
 
     <PreferenceCategory
         app:iconSpaceReserved="false"
-        app:title="@string/action_settings">
+        app:title="@string/nav_settings">
+
+        <com.ilya.scheduleapp.ui.GroupPreference app:title="@string/more_group" />
+
+        <SwitchPreference
+            app:icon="@drawable/more_ic_week_switch_24dp"
+            app:key="auto_week_change"
+            app:title="@string/more_auto_change_week"
+            app:useSimpleSummaryProvider="true" />
+
+        <com.ilya.scheduleapp.ui.WeekPreference app:title="@string/more_study_week" />
 
         <SwitchPreference
             app:disableDependentsState="true"
-            app:icon="@drawable/settings_ic_invert_colors_24dp"
+            app:icon="@drawable/more_ic_invert_colors_24dp"
             app:key="dark_theme"
             app:title="@string/more_dark_theme"
             app:useSimpleSummaryProvider="true" />
 
         <com.ilya.scheduleapp.ui.ColorPickerPreference
             app:dependency="dark_theme"
-            app:icon="@drawable/settings_ic_color_lens_24dp"
+            app:icon="@drawable/more_ic_color_lens_24dp"
             app:key="primary_color"
-            app:title="@string/settings_color_change" />
-
-        <com.ilya.scheduleapp.ui.GroupPreference app:title="@string/more_group" />
+            app:title="@string/more_color_change" />
 
         <com.ilya.scheduleapp.ui.UpdatePreference
             app:entries="@array/update_frequency"

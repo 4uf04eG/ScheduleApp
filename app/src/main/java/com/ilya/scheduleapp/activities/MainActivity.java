@@ -6,6 +6,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -18,56 +20,53 @@ import androidx.preference.Preference;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ilya.scheduleapp.R;
-import com.ilya.scheduleapp.fragments.AlarmsFragment;
 import com.ilya.scheduleapp.fragments.CallScheduleFragment;
 import com.ilya.scheduleapp.fragments.MoreFragment;
 import com.ilya.scheduleapp.fragments.ScheduleFragment;
 import com.ilya.scheduleapp.helpers.AppStyleHelper;
 import com.ilya.scheduleapp.helpers.BackgroundHelper.UpdateFrequencies;
-import com.ilya.scheduleapp.helpers.LocaleHelper;
 import com.ilya.scheduleapp.helpers.StorageHelper;
+import com.ilya.scheduleapp.parsers.GroupNameParser;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
     private static final String GROUP_LINKS = "group_links";
+    private static final String GROUP_NAME = "group_name";
     private static final String SCHEDULE_LINK = "schedule_link";
     private static final String NUM_OF_WEEK = "current_week";
     private static final String UPDATE_FREQUENCY = "schedule_update_frequency";
-    private static final String ARG_SAVED_FRAGMENT = "saved_fragment";
-    private static final String ARG_VISIBILITY_STATUSES = "visibility_statuses";
+    private static final String AUTO_WEEK_CHANGE = "auto_week_change";
+    private static final String WEEK_OF_YEAR ="week_number";
+    private static final String WEEK_COUNT = "week_count";
 
     private static long bottomNavLastClickTime;
     private static boolean isGroupSelectorOpened;
 
-    private Toolbar toolbar;
+    private TextView toolbarSubtitle;
     private BottomNavigationView bottomNavigation;
-
-    //TODO: Fix bug when after changing device locale app locale doesn't change
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        setTitle(R.string.app_name);
-
         handleUrlIntent();
 
-        toolbar = findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         AppStyleHelper.restoreMainStyle(this, toolbar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+
+        toolbarSubtitle = findViewById(R.id.toolbar_subtitle);
 
         bottomNavigation = findViewById(R.id.bottom_nav_view);
         bottomNavigation.setOnNavigationItemSelectedListener(this);
 
-        if (savedInstanceState != null) {
-            restoreFragments(savedInstanceState);
-        } else if (StorageHelper.findStringInShared(this, SCHEDULE_LINK) != null) {
-            loadFragment(new ScheduleFragment());
-        } else {
+        if (StorageHelper.findStringInShared(this, SCHEDULE_LINK) == null) {
             setInitialParameters();
             startActivityForResult(new Intent(this, AllGroupsActivity.class), 0);
             isGroupSelectorOpened = true;
@@ -80,7 +79,6 @@ public class MainActivity extends AppCompatActivity
 
         if (requestCode == 0) {
             isGroupSelectorOpened = false;
-            loadFragment(new ScheduleFragment());
         }
 
         if (requestCode == 1) {
@@ -99,28 +97,17 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    protected void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-        List<Fragment> addedFragments = getSupportFragmentManager().getFragments();
-        boolean[] visibilityStatuses = new boolean[addedFragments.size()];
-
-        for (int i = 0; i < addedFragments.size(); i++) {
-            getSupportFragmentManager().putFragment(outState, ARG_SAVED_FRAGMENT + i,
-                    addedFragments.get(i));
-            visibilityStatuses[i] = addedFragments.get(i).isVisible();
-        }
-
-        outState.putBooleanArray(ARG_VISIBILITY_STATUSES, visibilityStatuses);
-    }
-
-    @Override
     protected void onPostResume() {
         super.onPostResume();
+
+        if (StorageHelper.findBooleanInShared(this, AUTO_WEEK_CHANGE)) {
+            setRightWeek();
+        }
 
         if (!isGroupSelectorOpened) {
             setFragmentBySelectedItemId(bottomNavigation.getSelectedItemId());
         }
-    }
+     }
 
     @Override
     public void onBackPressed() {
@@ -129,7 +116,6 @@ public class MainActivity extends AppCompatActivity
         if (fragment != null && fragment.isVisible()) {
             super.onBackPressed();
         } else {
-            loadFragment(new ScheduleFragment());
             bottomNavigation.setSelectedItemId(R.id.navigation_schedule);
         }
     }
@@ -148,7 +134,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressLint("SimpleDateFormat")
     public void changeToolbarSubtitle(boolean visible) {
         if (!visible) {
-            toolbar.setSubtitle("");
+            toolbarSubtitle.setVisibility(View.GONE);
             return;
         }
 
@@ -158,17 +144,63 @@ public class MainActivity extends AppCompatActivity
 
         String subtitle = getResources().getString(R.string.schedule_toolbar_subtitle,
                 format.format(calendar.getTime()), weekNum);
-        toolbar.setSubtitle(subtitle);
+        toolbarSubtitle.setVisibility(View.VISIBLE);
+        toolbarSubtitle.setText(subtitle);
     }
 
     private void handleUrlIntent() {
         Uri appLinkData = getIntent().getData();
         String regex = "http://www.ulstu.ru/schedule/students/part\\d+/\\d+.htm";
 
-        //TODO: Later needs to create and add parser to get group's name
         if (appLinkData != null && appLinkData.toString().matches(regex)) {
             StorageHelper.addToShared(this, SCHEDULE_LINK, appLinkData.toString());
             StorageHelper.clearSchedule(this);
+            tryLoadGroupName();
+        }
+    }
+
+    private void tryLoadGroupName() {
+        new Thread(() -> {
+            try {
+                StorageHelper.addToShared(this,
+                        GROUP_NAME, new GroupNameParser().execute(this).get());
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void setRightWeek() {
+        int storedWeekOfYear = StorageHelper.findIntInShared(this, WEEK_OF_YEAR);
+
+        Calendar calendar = Calendar.getInstance(Locale.UK);
+        int todayWeekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+
+        if (storedWeekOfYear == 0) {
+            StorageHelper.addToShared(this, WEEK_OF_YEAR, todayWeekOfYear);
+            return;
+        }
+
+        if (storedWeekOfYear % 2 != todayWeekOfYear % 2) {
+            int studyWeek = StorageHelper.findIntInShared(this, NUM_OF_WEEK);
+            int weekCount = StorageHelper.findIntInShared(this, WEEK_COUNT);
+
+            if (studyWeek + 1 < weekCount) {
+                StorageHelper.addToShared(this, NUM_OF_WEEK, studyWeek + 1);
+            } else {
+                StorageHelper.addToShared(this, NUM_OF_WEEK, 0);
+            }
+
+            ScheduleFragment fragment =
+                    (ScheduleFragment) getSupportFragmentManager().findFragmentByTag("schedule");
+
+            if (fragment != null) {
+                fragment.addScheduleToView(StorageHelper.findScheduleInShared(this));
+            }
+
+            StorageHelper.addToShared(this, WEEK_OF_YEAR, todayWeekOfYear);
         }
     }
 
@@ -177,11 +209,11 @@ public class MainActivity extends AppCompatActivity
         int defaultUpdateFrequency = UpdateFrequencies.EVERY_MONTH.ordinal();
 
         StorageHelper.addToShared(this, GROUP_LINKS, urls);
-        StorageHelper.addToShared(this, NUM_OF_WEEK, 1);
+        StorageHelper.addToShared(this, NUM_OF_WEEK, 0);
         StorageHelper.addToShared(this, UPDATE_FREQUENCY, defaultUpdateFrequency);
+        StorageHelper.addToShared(this, AUTO_WEEK_CHANGE, true);
 
         AppStyleHelper.initializeStyle(this);
-        LocaleHelper.initializeLocale(this);
     }
 
     private boolean setFragmentBySelectedItemId(int id) {
@@ -206,8 +238,6 @@ public class MainActivity extends AppCompatActivity
             AppStyleHelper.restoreTabLayoutStyle(this);
         } else if (fragment instanceof MoreFragment) {
             addFragment(fragment, "more");
-        } else if (fragment instanceof AlarmsFragment) {
-            addFragment(fragment, "alarms");
         } else {
             addFragment(fragment, "call_schedule");
         }
@@ -230,35 +260,4 @@ public class MainActivity extends AppCompatActivity
             transaction.add(R.id.main_container, fragment, tag).commit();
         }
     }
-
-    private void restoreFragments(Bundle savedState) {
-        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-        boolean[] visibilities = savedState.getBooleanArray(ARG_VISIBILITY_STATUSES);
-        FragmentManager fm = getSupportFragmentManager();
-        Fragment fragment;
-        int i = 0;
-
-        while ((fragment = fm.getFragment(savedState, ARG_SAVED_FRAGMENT + i)) != null) {
-            Fragment cachedFragment = fm.findFragmentByTag(fragment.getTag());
-
-            if (cachedFragment == null) transaction.add(R.id.main_container, fragment);
-
-            if (visibilities != null && !visibilities[i]) {
-                transaction.hide(fragment);
-            } else {
-                changeToolbarSubtitle(fragment instanceof ScheduleFragment);
-            }
-
-            i++;
-        }
-    }
-
-
-
-    // How to restart activity the right way
-    // private void restartActivity() {
-    //        startActivity(getIntent());
-    //        finish();
-    //        overridePendingTransition(0, 0);
-    //    }
 }

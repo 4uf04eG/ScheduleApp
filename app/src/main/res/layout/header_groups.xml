@@ -30,4 +30,5 @@
         android:layout_marginRight="-69dp"
         android:background="@drawable/all_groups_ic_triangle"
         android:rotation="-90" />
+
 </RelativeLayout>

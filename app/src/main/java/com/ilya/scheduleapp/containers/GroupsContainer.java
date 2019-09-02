@@ -80,11 +80,10 @@ public class GroupsContainer implements Parcelable {
 
         List<String> linearGroups = new ArrayList<>();
 
-        //TODO: Fix code to ignore duplicated headers regardless of links number
         for (int year = 0; year < data.size(); year++) {
             linearGroups.add(Integer.toString(year + 1));
 
-            for (int i = 0; i < data.get(year).size(); i++) {//Starting at 1 to ignore header duplicates
+            for (int i = 0; i < data.get(year).size(); i++) {
                 linearGroups.add(data.get(year).get(i).name);
             }
         }

@@ -2,12 +2,11 @@ package com.ilya.scheduleapp;
 
 import android.content.Context;
 
-import androidx.test.runner.AndroidJUnit4;
-
 import com.ilya.scheduleapp.helpers.StorageHelper;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.JUnit4;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -15,9 +14,9 @@ import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(AndroidJUnit4.class)
+@RunWith(JUnit4.class)
 public class StorageTests {
-    private Context appContext = androidx.test.platform.app.
+    private final Context appContext = androidx.test.platform.app.
             InstrumentationRegistry.getInstrumentation().getContext();
 
     @Test

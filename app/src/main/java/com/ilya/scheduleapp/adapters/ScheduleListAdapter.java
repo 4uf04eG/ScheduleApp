@@ -18,6 +18,9 @@ import com.ilya.scheduleapp.containers.ClassData;
 import java.util.List;
 
 public class ScheduleListAdapter extends RecyclerView.Adapter<ScheduleListAdapter.ViewHolder> {
+    private static final int SCHEDULE_IS_EMPTY = 0;
+    private static final int SCHEDULE_IS_NOT_EMPTY = 1;
+
     private List<ClassData> schedule;
 
     public ScheduleListAdapter(List<ClassData> schedule) {
@@ -27,12 +30,20 @@ public class ScheduleListAdapter extends RecyclerView.Adapter<ScheduleListAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-        return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).
-                inflate(R.layout.item_schedule, viewGroup, false));
+
+        if (viewType == SCHEDULE_IS_NOT_EMPTY) {
+            return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).
+                    inflate(R.layout.item_schedule, viewGroup, false));
+        } else {
+            return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).
+                    inflate(R.layout.item_empty_schedule, viewGroup, false));
+        }
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
+        if (getItemViewType(position) == SCHEDULE_IS_EMPTY) return;
+
         ClassData classInfo = schedule.get(position);
         Resources resources = viewHolder.itemView.getResources();
 
@@ -73,12 +84,12 @@ public class ScheduleListAdapter extends RecyclerView.Adapter<ScheduleListAdapte
 
     @Override
     public int getItemViewType(int position) {
-        return position;
+        return schedule.isEmpty() ? SCHEDULE_IS_EMPTY : SCHEDULE_IS_NOT_EMPTY;
     }
 
     @Override
     public int getItemCount() {
-        return schedule.size();
+        return schedule.isEmpty() ? 1 : schedule.size();
     }
 
     public void refreshData(List<ClassData> newData) {

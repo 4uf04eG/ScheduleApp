@@ -5,15 +5,25 @@ import android.app.Application;
 import androidx.appcompat.app.AppCompatDelegate;
 
 import com.ilya.scheduleapp.helpers.BackgroundHelper;
+import com.ilya.scheduleapp.helpers.BackgroundHelper.UpdateFrequencies;
+import com.ilya.scheduleapp.helpers.LocaleHelper;
 import com.ilya.scheduleapp.helpers.StorageHelper;
+
+import static com.ilya.scheduleapp.helpers.BackgroundHelper.UpdateFrequencies.NEVER;
 
 public class UserPreferences extends Application {
     private static final String DARK_THEME_TYPE = "dark_theme";
+    private static final String UPDATE_FREQUENCY = "schedule_update_frequency";
 
     @Override
     public void onCreate() {
-        //LocaleHelper.loadLocale(this);
+        setDarkTheme();
+        setUpdateTask();
+        LocaleHelper.loadDefaultLocale(this);
+        super.onCreate();
+    }
 
+    private void setDarkTheme() {
         boolean darkTheme = StorageHelper.findBooleanInShared(this, DARK_THEME_TYPE);
 
         if (darkTheme) {
@@ -21,13 +31,16 @@ public class UserPreferences extends Application {
         } else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
-
-        if (StorageHelper.findScheduleInShared(this) != null) {
-            BackgroundHelper.registerDefaultUpdateTask(this);
-        } else {
-            BackgroundHelper.removeUpdateTask(this);
-        }
-
-        super.onCreate();
     }
+
+    private void setUpdateTask() {
+        int updateStatus = StorageHelper.findIntInShared(this, UPDATE_FREQUENCY);
+        boolean isUpdateDisabled = UpdateFrequencies.toEnum(updateStatus) == NEVER;
+
+        if (!BackgroundHelper.isTaskRegistered(this) && !isUpdateDisabled) {
+            BackgroundHelper.registerUpdateTask(this, 7);
+        }
+    }
+
+
 }

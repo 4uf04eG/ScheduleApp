@@ -9,15 +9,14 @@
     <include layout="@layout/button_retry"
         android:layout_weight="1" />
 
-    <include
-        layout="@layout/progress_bar_all"
+    <include layout="@layout/progress_bar_all"
         android:layout_weight="1" />
 
     <com.ilya.scheduleapp.ui.DynamicTabLayout
         android:id="@+id/tabs"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="-10dp"
+        android:layout_marginTop="-12dp"
         app:tabMode="scrollable"
         app:tabSelectedTextColor="@android:color/white"
         app:tabTextColor="@color/colorHintTextLight"
@@ -38,5 +37,6 @@
             android:overScrollMode="never" />
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
 </LinearLayout>
 

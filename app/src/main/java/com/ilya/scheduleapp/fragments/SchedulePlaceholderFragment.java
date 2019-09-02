@@ -59,6 +59,7 @@ public class SchedulePlaceholderFragment extends Fragment {
                 else layout.setEnabled(false);
             }
         });
+
     }
 
     @Override

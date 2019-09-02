@@ -33,7 +33,7 @@ public class NotificationHelper {
 
     public static void showNotification(Context context) {
         String channelId = context.getResources().getString(R.string.app_name);
-        String title = context.getResources().getString(R.string.notification_title);
+        String title = context.getResources().getString(R.string.app_name);
         String text = context.getResources().getString(R.string.notification_text);
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);

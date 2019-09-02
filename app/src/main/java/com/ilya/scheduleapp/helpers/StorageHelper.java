@@ -111,16 +111,4 @@ public class StorageHelper {
         editor.clear();
         editor.apply();
     }
-
-    public static void clearShared(Context context) {
-        SharedPreferences.Editor editor = PreferenceManager.
-                getDefaultSharedPreferences(context).edit();
-        SharedPreferences.Editor editorSc = context.getSharedPreferences(
-                SCHEDULE, Context.MODE_PRIVATE).edit();
-
-        editor.clear();
-        editor.apply();
-        editorSc.clear();
-        editorSc.apply();
-    }
 }

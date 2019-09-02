@@ -2,7 +2,6 @@ package com.ilya.scheduleapp.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,7 @@ import java.util.concurrent.ExecutionException;
 
 public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListener {
     private static final String NUM_OF_WEEK = "current_week";
+    private static final String WEEK_COUNT = "week_count";
     private static final String ARG_SELECTED_ITEM = "view_pager_previous_item";
 
     private SwipeRefreshLayout refreshLayout;
@@ -49,7 +49,6 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
                 requireContext(), getChildFragmentManager(), 0);
         viewPager = requireView().findViewById(R.id.view_pager);
         viewPager.setAdapter(schedulePagerAdapter);
-        Log.d("PageLimit",viewPager.getOffscreenPageLimit() + "");
 
         if (savedInstanceState != null) {
             viewPager.setCurrentItem(savedInstanceState.getInt(ARG_SELECTED_ITEM));
@@ -105,12 +104,15 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
             adapter.refreshData(schedule.get(numOfWeek));
         }
 
-        ((MainActivity) requireActivity()).changeToolbarSubtitle(true);
+        if (isVisible()) {
+            ((MainActivity) requireActivity()).changeToolbarSubtitle(true);
+        }
     }
 
     @Override
     public void storeSchedule(Context context, ScheduleContainer scheduleContainer) {
         StorageHelper.addScheduleToShared(context, scheduleContainer);
+        StorageHelper.addToShared(context, WEEK_COUNT, scheduleContainer.size());
     }
 
     @Override
@@ -138,6 +140,20 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
         requireActivity().findViewById(R.id.all_progress_bar).setVisibility(View.GONE);
     }
 
+    private void tryLoadSchedule() {
+        final ScheduleAsyncTaskListener listener = this;
+
+        new Thread(() -> {
+            try {
+                new ScheduleParser(listener).execute().get();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
     private void onRefreshButtonClick() {
         requireActivity().findViewById(R.id.all_progress_bar).setVisibility(View.VISIBLE);
         requireActivity().findViewById(R.id.retry_refresh_button).setVisibility(View.GONE);
@@ -151,19 +167,5 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
         if (dayOfWeek >= 0 && dayOfWeek < adapter.getCount()) {
             viewPager.setCurrentItem(dayOfWeek);
         }
-    }
-
-    private void tryLoadSchedule() {
-        final ScheduleAsyncTaskListener listener = this;
-
-        new Thread(() -> {
-            try {
-                new ScheduleParser(listener).execute().get();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }).start();
     }
 }

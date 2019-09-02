@@ -66,7 +66,7 @@ public class ColorPickerPreference extends Preference {
         dialog.show(activity.getSupportFragmentManager(), "color_picker");
     }
 
-    static void changeViewColor(int color) {
+    private static void changeViewColor(int color) {
         if (colorView == null) return;
 
         Drawable background = colorView.get().getBackground();
@@ -94,7 +94,7 @@ public class ColorPickerPreference extends Preference {
 
             return ColorPickerDialogBuilder
                     .with(context)
-                    .setTitle(R.string.settings_color_title)
+                    .setTitle(R.string.more_color_title)
                     .initialColor(AppStyleHelper.getDefaultColor(context))
                     .lightnessSliderOnly()
                     .wheelType(ColorPickerView.WHEEL_TYPE.FLOWER)

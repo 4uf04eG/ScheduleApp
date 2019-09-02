@@ -138,7 +138,7 @@ public class AllGroupsActivity extends AppCompatActivity implements GroupsAsyncT
         } else finish();
     }
 
-    public void onRefreshButtonClick() {
+    private void onRefreshButtonClick() {
         findViewById(R.id.all_progress_bar).setVisibility(View.VISIBLE);
         findViewById(R.id.retry_refresh_button).setVisibility(View.GONE);
         tryLoadAllGroups();
@@ -168,6 +168,4 @@ public class AllGroupsActivity extends AppCompatActivity implements GroupsAsyncT
 
         builder.show();
     }
-
-
 }

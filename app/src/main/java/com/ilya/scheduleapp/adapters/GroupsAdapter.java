@@ -78,7 +78,6 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
         return groups.size();
     }
 
-    //TODO: Write tests to check if it really updates data. Yes, it should but i've never checked
     public void refreshData(List<String> newData) {
         if (newData != null) {
             groups = newData;
@@ -88,12 +87,12 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
 
     private List<Integer> generateHeaderColors() {
         return Arrays.asList(
-                Color.parseColor("#e32322"),
-                Color.parseColor("#f28e1c"),
-                Color.parseColor("#454e99"),
-                Color.parseColor("#008f5a"),
-                Color.parseColor("#c5037d"),
-                Color.parseColor("#8dbb25"));
+                Color.parseColor("#e32322"), //Red
+                Color.parseColor("#f28e1c"), //Orange
+                Color.parseColor("#454e99"), //Blue
+                Color.parseColor("#008f5a"), //Dark green
+                Color.parseColor("#c5037d"), //Pink
+                Color.parseColor("#8dbb25")); //Bright green
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
