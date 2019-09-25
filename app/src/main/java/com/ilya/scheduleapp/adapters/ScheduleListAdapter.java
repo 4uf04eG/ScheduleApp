@@ -30,14 +30,13 @@ public class ScheduleListAdapter extends RecyclerView.Adapter<ScheduleListAdapte
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
-
         if (viewType == SCHEDULE_IS_NOT_EMPTY) {
             return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).
                     inflate(R.layout.item_schedule, viewGroup, false));
-        } else {
-            return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).
-                    inflate(R.layout.item_empty_schedule, viewGroup, false));
         }
+
+        return new ViewHolder(LayoutInflater.from(viewGroup.getContext()).
+                inflate(R.layout.item_empty_schedule, viewGroup, false));
     }
 
     @Override
@@ -106,28 +105,28 @@ public class ScheduleListAdapter extends RecyclerView.Adapter<ScheduleListAdapte
 
         shortTypeStr = shortTypeStr.toLowerCase();
 
-        if (shortTypeStr.equals("пр")) {
-            typeContainer.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light));
-            return resources.getString(R.string.schedule_types_practice);
+        switch (shortTypeStr) {
+            case "пр":
+                typeContainer.setBackgroundColor(resources.getColor(android.R.color.holo_blue_light));
+                return resources.getString(R.string.schedule_types_practice);
+            case "лаб":
+                typeContainer.setBackgroundColor(resources.getColor(android.R.color.holo_green_light));
+                return resources.getString(R.string.schedule_types_lab_work);
+            case "лек":
+                typeContainer.setBackgroundColor(resources.getColor(android.R.color.holo_orange_light));
+                return resources.getString(R.string.schedule_types_lecture);
+            default:
+                typeContainer.setBackgroundColor(resources.getColor(android.R.color.holo_red_light));
+                return "";
         }
-        if (shortTypeStr.equals("лаб")) {
-            typeContainer.setBackgroundColor(resources.getColor(android.R.color.holo_green_light));
-            return resources.getString(R.string.schedule_types_lab_work);
-        }
-        if (shortTypeStr.equals("лек")) {
-            typeContainer.setBackgroundColor(resources.getColor(android.R.color.holo_orange_light));
-            return resources.getString(R.string.schedule_types_lecture);
-        }
-
-        return "";
     }
 
     private Spanned getTimeByClassPosition(Resources resources, String classPos) {
         String[] times = resources.getStringArray(R.array.class_times);
         int index = Integer.parseInt(classPos) - 1;
 
-        if (index < times.length) return Html.fromHtml(times[index]);
-        else return Html.fromHtml("<![CDATA[<b>--</b>]]>\n--");
+        if (index >= 0 && index < times.length) return Html.fromHtml(times[index]);
+        else return Html.fromHtml("<b>--</b><br/>--");
     }
 
     private String fixInitials(String teacher) {

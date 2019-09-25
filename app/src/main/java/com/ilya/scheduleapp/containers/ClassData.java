@@ -37,11 +37,11 @@ public class ClassData implements Parcelable {
             classRooms = new String[]{matcher.group(5), matcher.group(8)};
         } else {
             Log.e("ParsingString", "String could not be parsed: " + classRaw);
-            position = "";
+            position = "-1";
             type = "";
-            names = new String[]{"", null};
-            teachers = new String[]{"", null};
-            classRooms = new String[]{"", null};
+            names = new String[]{"Parsing Error", null};
+            teachers = new String[]{null, null};
+            classRooms = new String[]{"Please open online", null};
         }
     }
 
@@ -91,10 +91,10 @@ public class ClassData implements Parcelable {
 class Patterns {
     private static final String position = "(\\d)+\\)\\s"; //Example: 2)
     private static final String type = "(\\p{L}+)."; //Example: пр.
-    private static final String name = "([-\\p{L}\\d.,()/ ]+?)\\s?"; //Example: Физика - 1 п/г
+    private static final String name = "([-\\p{L}\\d.,:\"()/ ]+?)\\s?"; //Example: Физика - 1 п/г
     private static final String teacher = "([\\p{L}\\d]+ \\p{L} \\p{L}|(?<=\\s)\\p{L}{2,} \\p{L}{2,}|ПрепАДП)?"; //Example: Петров П П
     private static final String classRoom = "\\s(\\d\\s?[-_]\\s?[\\p{L}\\d/.]+)"; //Example: 2-202
-    private static final String secondName = "(?:(?:\\s([-\\p{L}/.,()/ ]+?))?\\s";
+    private static final String secondName = "(?:(?:\\s([-\\p{L}/.,:\"()/ ]+?))?\\s";
     private static final String secondClassRoom = classRoom + ")?";
 
     static String generateUnitedPattern() {

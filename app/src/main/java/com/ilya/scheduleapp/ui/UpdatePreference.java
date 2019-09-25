@@ -15,14 +15,17 @@ public class UpdatePreference extends ListPreference {
 
     public UpdatePreference(Context context) {
         super(context);
+        setDialogTitle(R.string.more_update_frequency_selector);
     }
 
     public UpdatePreference(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setDialogTitle(R.string.more_update_frequency_selector);
     }
 
     public UpdatePreference(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
+        setDialogTitle(R.string.more_update_frequency_selector);
     }
 
     @Override

@@ -33,12 +33,24 @@
 
     <style name="ToolbarThemeSubtitle">
         <item name="android:textSize">14sp</item>
-        <item name="android:textColor">@color/lightGray</item>
+        <item name="android:textColor">@color/colorHintTextLight</item>
     </style>
 
-    <style name="TabLayout" parent="Widget.MaterialComponents.TabLayout">
+    <style name="TabLayoutTheme" parent="Widget.MaterialComponents.TabLayout">
         <item name="android:textSize">15sp</item>
         <item name="android:fontFamily">@font/roboto_medium</item>
+    </style>
+
+    <style name="WeekChangeButtonTheme">
+        <item name="android:layout_margin">5dp</item>
+        <item name="android:paddingTop">5dp</item>
+        <item name="android:paddingBottom">5dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+        <item name="android:textColor">@drawable/toolbar_rounded_week_text_color</item>
+        <item name="android:background">@drawable/toolbar_rounded_week</item>
+        <item name="android:button">@null</item>
+        <item name="android:onClick">onWeekChangeButtonClicked</item>
     </style>
 
 </resources>

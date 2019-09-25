@@ -1,13 +1,19 @@
 apply plugin: 'com.android.application'
 
+ext.versionMajor = 1
+ext.versionMinor = 1
+ext.versionPatch = 0
+ext.versionClassifier = null
+ext.minimumSdkVersion = 16
+
 android {
     compileSdkVersion 28
     defaultConfig {
         applicationId "com.ilya.scheduleapp"
         minSdkVersion 16
         targetSdkVersion 28
-        versionCode 1
-        versionName "1.0"
+        versionCode generateVersionCode()
+        versionName generateVersionName()
         resConfigs "en" ,"ru"
         vectorDrawables.useSupportLibrary = false
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -27,6 +33,21 @@ android {
         targetCompatibility = '1.8'
         sourceCompatibility = '1.8'
     }
+}
+
+private Integer generateVersionCode() {
+    return ext.minimumSdkVersion * 10000000 + ext.versionMajor *
+            10000 + ext.versionMinor * 100 + ext.versionPatch
+}
+
+private String generateVersionName() {
+    String versionName = "${ext.versionMajor}.${ext.versionMinor}.${ext.versionPatch}"
+
+    if (ext.versionClassifier != null) {
+        versionName += "-" + ext.versionClassifier
+    }
+
+    return versionName
 }
 
 dependencies {

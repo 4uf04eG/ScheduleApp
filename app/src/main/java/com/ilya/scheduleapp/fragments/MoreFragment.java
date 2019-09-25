@@ -10,6 +10,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 
 import com.ilya.scheduleapp.R;
+import com.ilya.scheduleapp.activities.MainActivity;
 import com.ilya.scheduleapp.helpers.StorageHelper;
 
 
@@ -56,6 +57,12 @@ public class MoreFragment extends PreferenceFragmentCompat
         }
 
         return false;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        ((MainActivity) requireActivity()).changeToolbarLayout(false);
     }
 
     private void openLinkInBrowser() {

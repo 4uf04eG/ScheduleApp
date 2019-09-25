@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.os.SystemClock;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -20,6 +21,7 @@ import androidx.preference.Preference;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.ilya.scheduleapp.R;
+import com.ilya.scheduleapp.containers.ScheduleContainer;
 import com.ilya.scheduleapp.fragments.CallScheduleFragment;
 import com.ilya.scheduleapp.fragments.MoreFragment;
 import com.ilya.scheduleapp.fragments.ScheduleFragment;
@@ -49,6 +51,7 @@ public class MainActivity extends AppCompatActivity
 
     private TextView toolbarSubtitle;
     private BottomNavigationView bottomNavigation;
+    private RadioGroup radioGroup;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +65,7 @@ public class MainActivity extends AppCompatActivity
         getSupportActionBar().setDisplayShowTitleEnabled(false);
 
         toolbarSubtitle = findViewById(R.id.toolbar_subtitle);
+        radioGroup = findViewById(R.id.toolbar_weeks_group);
 
         bottomNavigation = findViewById(R.id.bottom_nav_view);
         bottomNavigation.setOnNavigationItemSelectedListener(this);
@@ -131,21 +135,60 @@ public class MainActivity extends AppCompatActivity
         return setFragmentBySelectedItemId(menuItem.getItemId());
     }
 
+    public void onWeekChangeButtonClicked(View view) {
+        switch (view.getId()) {
+            case R.id.toolbar_weeks_first:
+                StorageHelper.addToShared(this, NUM_OF_WEEK, 0);
+                break;
+            case R.id.toolbar_weeks_second:
+                StorageHelper.addToShared(this, NUM_OF_WEEK, 1);
+                break;
+        }
+
+        ScheduleFragment schedule =
+                (ScheduleFragment) getSupportFragmentManager().findFragmentByTag("schedule");
+        MoreFragment more =
+                (MoreFragment) getSupportFragmentManager().findFragmentByTag("more");
+
+        if (schedule != null) {
+            ScheduleContainer container = StorageHelper.findScheduleInShared(this);
+
+            if (container != null) schedule.addScheduleToView(container);
+        }
+
+        if (more != null) {
+            Preference preference = more.findPreference("current_week");
+            preference.setSummary(preference.getSummary());
+        }
+    }
+
     @SuppressLint("SimpleDateFormat")
-    public void changeToolbarSubtitle(boolean visible) {
+    public void changeToolbarLayout(boolean visible) {
         if (!visible) {
             toolbarSubtitle.setVisibility(View.GONE);
+            radioGroup.setVisibility(View.GONE);
             return;
         }
 
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat format = new SimpleDateFormat("E MMM d");
-        int weekNum = StorageHelper.findIntInShared(this, NUM_OF_WEEK) + 1;
+        int weekNum = StorageHelper.findIntInShared(this, NUM_OF_WEEK);
 
         String subtitle = getResources().getString(R.string.schedule_toolbar_subtitle,
-                format.format(calendar.getTime()), weekNum);
+                format.format(calendar.getTime()));
         toolbarSubtitle.setVisibility(View.VISIBLE);
         toolbarSubtitle.setText(subtitle);
+
+        radioGroup.setVisibility(View.VISIBLE);
+
+        switch (weekNum) {
+            case 0:
+                radioGroup.check(R.id.toolbar_weeks_first);
+                break;
+            case 1:
+                radioGroup.check(R.id.toolbar_weeks_second);
+                break;
+        }
     }
 
     private void handleUrlIntent() {
@@ -176,14 +219,15 @@ public class MainActivity extends AppCompatActivity
         int storedWeekOfYear = StorageHelper.findIntInShared(this, WEEK_OF_YEAR);
 
         Calendar calendar = Calendar.getInstance(Locale.UK);
-        int todayWeekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
+        calendar.add(Calendar.DATE, 1);
+        int yesterdayWeekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
 
         if (storedWeekOfYear == 0) {
-            StorageHelper.addToShared(this, WEEK_OF_YEAR, todayWeekOfYear);
+            StorageHelper.addToShared(this, WEEK_OF_YEAR, yesterdayWeekOfYear);
             return;
         }
 
-        if (storedWeekOfYear % 2 != todayWeekOfYear % 2) {
+        if (storedWeekOfYear % 2 != yesterdayWeekOfYear % 2) {
             int studyWeek = StorageHelper.findIntInShared(this, NUM_OF_WEEK);
             int weekCount = StorageHelper.findIntInShared(this, WEEK_COUNT);
 
@@ -200,7 +244,7 @@ public class MainActivity extends AppCompatActivity
                 fragment.addScheduleToView(StorageHelper.findScheduleInShared(this));
             }
 
-            StorageHelper.addToShared(this, WEEK_OF_YEAR, todayWeekOfYear);
+            StorageHelper.addToShared(this, WEEK_OF_YEAR, yesterdayWeekOfYear);
         }
     }
 
@@ -241,8 +285,6 @@ public class MainActivity extends AppCompatActivity
         } else {
             addFragment(fragment, "call_schedule");
         }
-
-        changeToolbarSubtitle(fragment instanceof ScheduleFragment);
     }
 
     private void addFragment(Fragment fragment, String tag) {
@@ -256,6 +298,14 @@ public class MainActivity extends AppCompatActivity
 
         if (cachedFragment != null) {
             transaction.show(cachedFragment).commit();
+
+            if (cachedFragment instanceof ScheduleFragment) {
+                if (((ScheduleFragment) cachedFragment).getLoadStatus()) {
+                    changeToolbarLayout(true);
+                }
+            } else {
+                changeToolbarLayout(false);
+            }
         } else {
             transaction.add(R.id.main_container, fragment, tag).commit();
         }

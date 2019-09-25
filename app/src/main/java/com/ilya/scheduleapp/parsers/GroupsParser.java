@@ -4,8 +4,6 @@ package com.ilya.scheduleapp.parsers;
 import android.content.Context;
 import android.os.AsyncTask;
 
-import androidx.annotation.NonNull;
-
 import com.ilya.scheduleapp.containers.GroupsContainer;
 import com.ilya.scheduleapp.helpers.StorageHelper;
 import com.ilya.scheduleapp.listeners.GroupsAsyncTaskListener;
@@ -16,16 +14,17 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.Set;
 
 public class GroupsParser extends AsyncTask<Void, Integer, GroupsContainer> {
     private static final String GROUP_LINKS = "group_links";
 
-    private final GroupsAsyncTaskListener listener;
+    private final WeakReference<Context> context;
 
-    public GroupsParser(@NonNull GroupsAsyncTaskListener listener) {
-        this.listener = listener;
+    public GroupsParser(Context context) {
+        this.context = new WeakReference<>(context);
     }
 
     /**
@@ -36,12 +35,11 @@ public class GroupsParser extends AsyncTask<Void, Integer, GroupsContainer> {
      *
      * @return {@link GroupsContainer} with all groups.
      * Could be empty if no urls at storage or couldn't parse link
-     * @throws IOException if could not connect or parse {@link URL}
      */
     @Override
     protected GroupsContainer doInBackground(Void... voids) {
         GroupsContainer groups = new GroupsContainer();
-        Set<String> urls = StorageHelper.findStringSetInShared((Context) listener, GROUP_LINKS);
+        Set<String> urls = StorageHelper.findStringSetInShared(context.get(), GROUP_LINKS);
 
         if (urls == null) return groups;
 
@@ -87,6 +85,14 @@ public class GroupsParser extends AsyncTask<Void, Integer, GroupsContainer> {
     @Override
     protected void onPostExecute(GroupsContainer groupsContainer) {
         super.onPostExecute(groupsContainer);
+        GroupsAsyncTaskListener listener;
+
+        if (context.get() instanceof GroupsAsyncTaskListener) {
+            listener = (GroupsAsyncTaskListener) context.get();
+        } else {
+            return;
+        }
+
         listener.finishRefreshing();
 
         if (groupsContainer.size() == 0) {

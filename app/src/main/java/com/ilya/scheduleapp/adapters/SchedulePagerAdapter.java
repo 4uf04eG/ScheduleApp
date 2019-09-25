@@ -32,9 +32,9 @@ public class SchedulePagerAdapter extends FragmentStatePagerAdapter {
     public Fragment getItem(int position) {
         if (position < schedule.size()) {
             return SchedulePlaceholderFragment.newInstance(schedule.get(position), position);
-        } else {
-            return SchedulePlaceholderFragment.newInstance(new ArrayList<>(), position);
         }
+
+        return SchedulePlaceholderFragment.newInstance(new ArrayList<>(), position);
     }
 
     @Nullable

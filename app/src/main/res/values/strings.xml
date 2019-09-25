@@ -24,12 +24,12 @@
 
     <string name="more_dark_theme">Dark theme</string>
     <string name="more_color_change">Primary color</string>
-    <string name="more_color_title">Choose color</string>
+    <string name="more_color_title">Choose a color</string>
     <string name="more_group">Group</string>
     <string name="more_study_week">Study week</string>
-    <string name="more_week_selector">Select study week</string>
+    <string name="more_week_selector">Select a study week</string>
     <string name="more_update_frequency">Schedule update frequency</string>
-    <string name="more_update_frequency_selector">Select update frequency</string>
+    <string name="more_update_frequency_selector">Select an update frequency</string>
     <string name="more_auto_change_week">Change week automatically</string>
 
     <string name="confirmation">OK</string>
@@ -43,7 +43,7 @@
     <string name="saturday">Saturday</string>
 
     <string name="channel_name">Schedule update notifications</string>
-    <string name="channel_description">Used to show notifications when schedule updated</string>
+    <string name="channel_description">Used to show notifications when schedule\'s been updated</string>
     <string name="notification_text">Schedule has been updated</string>
 
     <string name="update_every_day">Every day</string>
@@ -54,16 +54,19 @@
     <string name="schedule_types_practice">P\nR\nA\nC</string>
     <string name="schedule_types_lecture">L\nE\nC</string>
     <string name="schedule_types_lab_work">L\nA\nB</string>
-    <string name="schedule_toolbar_subtitle">Today, %1$s | Week %2$d</string>
-
+    <string name="schedule_toolbar_subtitle">Today, %1$s</string>
     <string name="schedule_item_empty_text">No classes on this day</string>
-    <string name="preference_not_specified">Not specified</string>
 
-    <string name="more_actions">Actions</string>
+    <string name="preference_not_specified">Not specified</string>
+    <string name="more_header_actions">Actions</string>
+
     <string name="week_first">First</string>
     <string name="week_second">Second</string>
     <string name="week_third">Third</string>
     <string name="week_fourth">Fourth</string>
+
+    <string name="toolbar_week_w1">W1</string>
+    <string name="toolbar_week_w2">W2</string>
 </resources>
 
 

@@ -12,4 +12,6 @@ public interface ScheduleAsyncTaskListener {
     void showErrorToast(Context context);
 
     void finishRefreshing();
+
+    void reloadSchedule();
 }

@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 
 import com.ilya.scheduleapp.helpers.BackgroundHelper;
 import com.ilya.scheduleapp.helpers.BackgroundHelper.UpdateFrequencies;
-import com.ilya.scheduleapp.helpers.LocaleHelper;
 import com.ilya.scheduleapp.helpers.StorageHelper;
 
 import static com.ilya.scheduleapp.helpers.BackgroundHelper.UpdateFrequencies.NEVER;
@@ -19,7 +18,6 @@ public class UserPreferences extends Application {
     public void onCreate() {
         setDarkTheme();
         setUpdateTask();
-        LocaleHelper.loadDefaultLocale(this);
         super.onCreate();
     }
 
@@ -41,6 +39,4 @@ public class UserPreferences extends Application {
             BackgroundHelper.registerUpdateTask(this, 7);
         }
     }
-
-
 }

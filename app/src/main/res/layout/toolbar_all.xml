@@ -32,4 +32,29 @@
             style="@style/ToolbarThemeSubtitle"/>
     </LinearLayout>
 
+    <RadioGroup
+        android:id="@+id/toolbar_weeks_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginEnd="10dp"
+        android:gravity="end">
+
+        <RadioButton
+            android:id="@+id/toolbar_weeks_first"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/toolbar_week_w1"
+            style="@style/WeekChangeButtonTheme" />
+
+
+        <RadioButton
+            android:id="@+id/toolbar_weeks_second"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/toolbar_week_w2"
+            style="@style/WeekChangeButtonTheme" />
+
+    </RadioGroup>
+
 </androidx.appcompat.widget.Toolbar>

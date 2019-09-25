@@ -21,7 +21,7 @@
         app:tabSelectedTextColor="@android:color/white"
         app:tabTextColor="@color/colorHintTextLight"
         app:tabIndicatorColor="@android:color/white"
-        app:tabTextAppearance="@style/TabLayout"
+        app:tabTextAppearance="@style/TabLayoutTheme"
         android:visibility="gone" />
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout

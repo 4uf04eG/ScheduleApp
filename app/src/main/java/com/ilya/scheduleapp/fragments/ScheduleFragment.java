@@ -17,10 +17,12 @@ import com.google.android.material.tabs.TabLayout;
 import com.ilya.scheduleapp.R;
 import com.ilya.scheduleapp.activities.MainActivity;
 import com.ilya.scheduleapp.adapters.SchedulePagerAdapter;
+import com.ilya.scheduleapp.containers.GroupsContainer;
 import com.ilya.scheduleapp.containers.ScheduleContainer;
 import com.ilya.scheduleapp.helpers.AppStyleHelper;
 import com.ilya.scheduleapp.helpers.StorageHelper;
 import com.ilya.scheduleapp.listeners.ScheduleAsyncTaskListener;
+import com.ilya.scheduleapp.parsers.GroupsParser;
 import com.ilya.scheduleapp.parsers.ScheduleParser;
 
 import java.util.Calendar;
@@ -29,7 +31,11 @@ import java.util.concurrent.ExecutionException;
 public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListener {
     private static final String NUM_OF_WEEK = "current_week";
     private static final String WEEK_COUNT = "week_count";
+    private static final String GROUP_NAME = "group_name";
+    private static final String SCHEDULE_LINK = "schedule_link";
     private static final String ARG_SELECTED_ITEM = "view_pager_previous_item";
+
+    private static boolean isScheduleLoaded;
 
     private SwipeRefreshLayout refreshLayout;
     private ViewPager viewPager;
@@ -44,6 +50,7 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
     public void onViewCreated(@NonNull final View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         AppStyleHelper.restoreTabLayoutStyle(requireActivity());
+        isScheduleLoaded = false;
 
         SchedulePagerAdapter schedulePagerAdapter = new SchedulePagerAdapter(
                 requireContext(), getChildFragmentManager(), 0);
@@ -60,7 +67,7 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
         tabs.setupWithViewPager(viewPager);
 
         refreshLayout = view.findViewById(R.id.swipe_refresh);
-        refreshLayout.setOnRefreshListener(this::tryLoadSchedule);
+        refreshLayout.setOnRefreshListener(() -> tryLoadSchedule(false));
 
         view.findViewById(R.id.retry_refresh_button).setOnClickListener(v -> onRefreshButtonClick());
 
@@ -78,9 +85,10 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
         ScheduleContainer schedule = StorageHelper.findScheduleInShared(requireContext());
 
         if (schedule == null) {
-            ((MainActivity) requireActivity()).changeToolbarSubtitle(false);
-            tryLoadSchedule();
+            ((MainActivity) requireActivity()).changeToolbarLayout(false);
+            tryLoadSchedule(false);
         } else {
+            ((MainActivity) requireActivity()).changeToolbarLayout(true);
             addScheduleToView(schedule);
             finishRefreshing();
         }
@@ -93,7 +101,7 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
     }
 
     @Override
-    public void addScheduleToView(ScheduleContainer schedule) {
+    public void addScheduleToView(@NonNull ScheduleContainer schedule) {
         if (!isAdded()) return;
 
         ViewPager view = requireActivity().findViewById(R.id.view_pager);
@@ -102,10 +110,11 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
 
         if (numOfWeek < schedule.size() && adapter != null && numOfWeek != Integer.MIN_VALUE) {
             adapter.refreshData(schedule.get(numOfWeek));
+            isScheduleLoaded = true;
         }
 
         if (isVisible()) {
-            ((MainActivity) requireActivity()).changeToolbarSubtitle(true);
+            ((MainActivity) requireActivity()).changeToolbarLayout(true);
         }
     }
 
@@ -120,10 +129,9 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
         Toast.makeText(context,
                 context.getString(R.string.connection_error), Toast.LENGTH_LONG).show();
 
+        if (viewPager.getChildCount() != 0 || !isAdded()) return;
+
         refreshLayout.setVisibility(View.GONE);
-
-        if (!isAdded()) return;
-
         requireActivity().findViewById(R.id.all_progress_bar).setVisibility(View.GONE);
         requireActivity().findViewById(R.id.tabs).setVisibility(View.GONE);
         requireActivity().findViewById(R.id.retry_refresh_button).setVisibility(View.VISIBLE);
@@ -140,12 +148,39 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
         requireActivity().findViewById(R.id.all_progress_bar).setVisibility(View.GONE);
     }
 
-    private void tryLoadSchedule() {
+    @Override
+    public void reloadSchedule() {
+        if (!isAdded()) return;
+
+        tryUpdateLink(requireContext());
+        tryLoadSchedule(true);
+    }
+
+    public boolean getLoadStatus() { return isScheduleLoaded; }
+
+    private void tryUpdateLink(Context context) {
+        new Thread(() -> {
+            try {
+                GroupsContainer groups = new GroupsParser(context).execute().get();
+
+                String name = StorageHelper.findStringInShared(requireContext(), GROUP_NAME);
+                String link = groups.findLink(name);
+                StorageHelper.addToShared(requireContext(), SCHEDULE_LINK, link);
+
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }).start();
+    }
+
+    private void tryLoadSchedule(Boolean isRetry) {
         final ScheduleAsyncTaskListener listener = this;
 
         new Thread(() -> {
             try {
-                new ScheduleParser(listener).execute().get();
+                new ScheduleParser(listener).execute(isRetry).get();
             } catch (ExecutionException e) {
                 e.printStackTrace();
             } catch (InterruptedException e) {
@@ -157,7 +192,7 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
     private void onRefreshButtonClick() {
         requireActivity().findViewById(R.id.all_progress_bar).setVisibility(View.VISIBLE);
         requireActivity().findViewById(R.id.retry_refresh_button).setVisibility(View.GONE);
-        tryLoadSchedule();
+        tryLoadSchedule(false);
     }
 
     private void selectTodayViewPagerItem(ViewPager viewPager, SchedulePagerAdapter adapter) {

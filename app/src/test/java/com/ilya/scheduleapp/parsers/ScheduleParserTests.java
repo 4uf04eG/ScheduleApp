@@ -3,11 +3,9 @@ package com.ilya.scheduleapp.parsers;
 import android.content.Context;
 import android.util.Log;
 
-import com.ilya.scheduleapp.activities.AllGroupsActivity;
 import com.ilya.scheduleapp.containers.ScheduleContainer;
 import com.ilya.scheduleapp.fragments.ScheduleFragment;
 import com.ilya.scheduleapp.helpers.StorageHelper;
-import com.ilya.scheduleapp.listeners.GroupsAsyncTaskListener;
 
 import org.jsoup.Jsoup;
 import org.junit.Before;
@@ -30,7 +28,6 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -47,20 +44,20 @@ public class ScheduleParserTests {
     public void setUp() {
         Set<String> links = new HashSet<>(Arrays.asList(
                 "http://www.ulstu.ru/schedule/students/part1/raspisan.htm",
-                "http://www.ulstu.ru/schedule/students/part2/raspisan.htm"));
-        GroupsAsyncTaskListener listener = mock(AllGroupsActivity.class);
+                "http://www.ulstu.ru/schedule/students/part2/raspisan.htm",
+                "http://www.ulstu.ru/schedule/students/part3/raspisan.htm"));
 
         mockStatic(StorageHelper.class);
         when(StorageHelper.findStringSetInShared(any(Context.class), anyString())).
                 thenReturn(links);
 
-        groups = new GroupsParser(listener).doInBackground().getAllLinks();
+        groups = new GroupsParser(context).doInBackground().getAllLinks();
     }
 
     @Test
     public void scheduleParser_TestAllLinks() throws InterruptedException {
         mockStatic(Log.class);
-        when(Log.e(anyString(), anyString())).thenAnswer(invocation -> {
+        when(Log.e(any(), any())).thenAnswer(invocation -> {
             assertEquals("Parsed", invocation.getArguments()[1]);
             return null;
         });
@@ -68,8 +65,13 @@ public class ScheduleParserTests {
         for (int pos = 0; pos < groups.size(); pos++) {
             when(StorageHelper.findStringInShared(context, "schedule_link")).
                     thenReturn(groups.get(pos));
-            new ScheduleParser(context).doInBackground();
-            Thread.sleep(10);
+
+            String name = new GroupNameParser().doInBackground(context);
+            when(StorageHelper.findStringInShared(context, "group_name"))
+                    .thenReturn(name);
+
+            new ScheduleParser(context).doInBackground(false);
+            Thread.sleep(30);
         }
     }
 

@@ -55,14 +55,17 @@
     <string name="schedule_types_practice">П\nР\nА\nК</string>
     <string name="schedule_types_lecture">Л\nЕ\nК</string>
     <string name="schedule_types_lab_work">Л\nА\nБ</string>
-    <string name="schedule_toolbar_subtitle">Сегодня, %1$s | Неделя %2$d</string>
+    <string name="schedule_toolbar_subtitle">Сегодня, %1$s</string>
     <string name="schedule_item_empty_text">В данный день нет занятий</string>
 
     <string name="preference_not_specified">Не указано</string>
-    <string name="more_actions">Действия</string>
+    <string name="more_header_actions">Действия</string>
 
     <string name="week_first">Первая</string>
     <string name="week_second">Вторая</string>
     <string name="week_third">Третья</string>
     <string name="week_fourth">Четвёртая</string>
+
+    <string name="toolbar_week_w1">Н1</string>
+    <string name="toolbar_week_w2">Н2</string>
 </resources>

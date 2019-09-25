@@ -134,8 +134,8 @@ public class ClassDataTests {
         ClassData result2 = new ClassData(inputStr2);
         ClassData result3 = new ClassData(inputStr3);
 
-        assertTrue(result1.getPosition().isEmpty());
-        assertTrue(result2.getPosition().isEmpty());
-        assertTrue(result3.getPosition().isEmpty());
+        assertTrue(result1.getType().isEmpty());
+        assertTrue(result2.getType().isEmpty());
+        assertTrue(result3.getType().isEmpty());
     }
 }

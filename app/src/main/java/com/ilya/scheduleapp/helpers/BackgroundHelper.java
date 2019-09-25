@@ -60,7 +60,7 @@ public class BackgroundHelper {
         NOT_FOUND;
 
         public static UpdateFrequencies toEnum(int index) {
-            if (index < UpdateFrequencies.values().length) {
+            if (index >= 0 && index < UpdateFrequencies.values().length) {
                 return UpdateFrequencies.values()[index];
             } else {
                 return NOT_FOUND;

@@ -19,9 +19,14 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.Locale;
+import java.util.Objects;
 
-public class ScheduleParser extends AsyncTask<Void, Integer, ScheduleContainer> {
+public class ScheduleParser extends AsyncTask<Boolean, Integer, ScheduleContainer> {
     private static final String SCHEDULE_LINK = "schedule_link";
+    private static final String GROUP_NAME = "group_name";
+
+    private static boolean isGroupLinkChanged;
+    private static boolean isRetryAfterLinkChanged;
 
     private final ScheduleAsyncTaskListener listener;
     private final WeakReference<Context> context;
@@ -52,15 +57,26 @@ public class ScheduleParser extends AsyncTask<Void, Integer, ScheduleContainer> 
      * @return contains schedule grouped by weeks and days
      */
     @Override
-    protected ScheduleContainer doInBackground(Void... voids) {
+    protected ScheduleContainer doInBackground(Boolean... booleans) {
         Elements tables = null;
         ScheduleContainer schedule = new ScheduleContainer();
         String link = StorageHelper.findStringInShared(context.get(), SCHEDULE_LINK);
 
+        if (booleans.length > 0) isRetryAfterLinkChanged = booleans[0];
+
         try {
             Document doc = Jsoup.parse(new URL(link), 15000);
-            tables = doc.select("table");
+
+            String expectedName = StorageHelper.findStringInShared(context.get(), GROUP_NAME);
+            String actualName = GroupNameParser.getNameFromDoc(doc);
+
+            if (!Objects.equals(expectedName, actualName)) isGroupLinkChanged = true;
+            else tables = doc.select("table");
         } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        } catch (IndexOutOfBoundsException e) {
             e.printStackTrace();
         }
 
@@ -101,16 +117,18 @@ public class ScheduleParser extends AsyncTask<Void, Integer, ScheduleContainer> 
         super.onPostExecute(scheduleContainer);
         if (listener == null) return;
 
-        listener.finishRefreshing();
-
         if (scheduleContainer.size() != 0) {
             if (!StorageHelper.isScheduleChanged(context.get(), scheduleContainer)) {
                 return;
             }
 
+            listener.finishRefreshing();
             listener.addScheduleToView(scheduleContainer);
             listener.storeSchedule(context.get(), scheduleContainer);
+        } else if (isGroupLinkChanged && !isRetryAfterLinkChanged) {
+            listener.reloadSchedule();
         } else {
+            listener.finishRefreshing();
             listener.showErrorToast(context.get());
         }
     }

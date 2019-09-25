@@ -14,13 +14,25 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ilya.scheduleapp.R;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
 public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder> {
+    private static final int ITEM_GROUP = 0;
+    private static final int ITEM_YEAR_HEADER = 1;
+
+    private static final int[] HEADER_COLORS = new int[] {
+            Color.parseColor("#e32322"), //Red
+            Color.parseColor("#f28e1c"), //Orange
+            Color.parseColor("#454e99"), //Blue
+            Color.parseColor("#008f5a"), //Dark green
+            Color.parseColor("#c5037d"), //Pink
+            Color.parseColor("#8dbb25")  //Bright green
+    };
+
     private static List<String> groups;
+
 
     public GroupsAdapter() {
         groups = new ArrayList<>();
@@ -33,7 +45,7 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
     @NonNull
     @Override
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (viewType == 0) {
+        if (viewType == ITEM_GROUP) {
             return new ViewHolder(LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.item_groups, parent, false));
         }
@@ -44,28 +56,25 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
 
     @Override
     public int getItemViewType(int position) {
-        return Character.isDigit(groups.get(position).charAt(0)) ? 1 : 0;
+        return Character.isDigit(groups.get(position).charAt(0)) ? ITEM_YEAR_HEADER : ITEM_GROUP;
     }
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, final int position) {
         if (groups == null) return;
 
-        List<Integer> colors = generateHeaderColors();
-        char firstChar;
-
-        if (Character.isDigit(firstChar = groups.get(position).charAt(0))) {
-            int index = Integer.parseInt(Character.toString(firstChar)) - 1;
+        if (getItemViewType(position) == ITEM_YEAR_HEADER) {
+            int index = Character.getNumericValue(groups.get(position).charAt(0)) - 1;
             int curColor;
 
-            if (index > 5) {
-                curColor = colors.get(new Random().nextInt(5));
+            if (index <= 5) {
+                curColor = HEADER_COLORS[index];
             } else {
-                curColor = colors.get(index);
+                curColor = HEADER_COLORS[new Random().nextInt(5)];
             }
 
             String year = holder.itemView.getResources().getString(R.string.groups_year);
-            holder.parent.setText(String.format(Locale.ENGLISH, "%c %s", firstChar, year));
+            holder.parent.setText(String.format(Locale.ENGLISH, "%d %s", index + 1, year));
             holder.parent.setBackgroundColor(curColor);
             holder.arrow.getBackground().setColorFilter(curColor, PorterDuff.Mode.SRC_ATOP);
         } else {
@@ -83,16 +92,6 @@ public class GroupsAdapter extends RecyclerView.Adapter<GroupsAdapter.ViewHolder
             groups = newData;
             notifyDataSetChanged();
         }
-    }
-
-    private List<Integer> generateHeaderColors() {
-        return Arrays.asList(
-                Color.parseColor("#e32322"), //Red
-                Color.parseColor("#f28e1c"), //Orange
-                Color.parseColor("#454e99"), //Blue
-                Color.parseColor("#008f5a"), //Dark green
-                Color.parseColor("#c5037d"), //Pink
-                Color.parseColor("#8dbb25")); //Bright green
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
