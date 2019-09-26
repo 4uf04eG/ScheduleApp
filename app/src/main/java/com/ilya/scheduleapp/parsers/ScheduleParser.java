@@ -118,11 +118,10 @@ public class ScheduleParser extends AsyncTask<Boolean, Integer, ScheduleContaine
         if (listener == null) return;
 
         if (scheduleContainer.size() != 0) {
-            if (!StorageHelper.isScheduleChanged(context.get(), scheduleContainer)) {
-                return;
-            }
-
             listener.finishRefreshing();
+
+            if (!StorageHelper.isScheduleChanged(context.get(), scheduleContainer)) return;
+
             listener.addScheduleToView(scheduleContainer);
             listener.storeSchedule(context.get(), scheduleContainer);
         } else if (isGroupLinkChanged && !isRetryAfterLinkChanged) {
