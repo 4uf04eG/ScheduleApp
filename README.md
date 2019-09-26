@@ -9,7 +9,7 @@ For now it only supports <a href='http://www.ulstu.ru/main/view/article/100'>ULS
   <img src='images/Screenshot1.jpg' width='170'> 
   <img src='images/Screenshot2.jpg' width='170'>  
   <img src='images/Screenshot3.jpg' width='170'>
-  <img src='images/Screenshot4.jpg' width='170'>   
+  <img src='images/Screenshot4.png' width='170'>   
   <img src='images/Screenshot5.jpg' width='170'>
 </div>
 
