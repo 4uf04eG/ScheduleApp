@@ -20,8 +20,8 @@ For now it only supports <a href='http://www.ulstu.ru/main/view/article/100'>ULS
   - Nice design(or not)
   
 ## Installation
-  - Download <a href='APK/ScheduleApp-v1.1.0.apk'>apk file</a>
-  - Set in security options of your device intallation from unknown sources if it not enabled already
+  - Download <a href='APK/ScheduleApp-v1.1.1.apk'>apk file</a>
+  - Set in security options of your device installation from unknown sources if it not enabled already
   - Install application
   
   ---
@@ -39,6 +39,6 @@ For now it only supports <a href='http://www.ulstu.ru/main/view/article/100'>ULS
   - Приятный дизайн(или нет)
   
 ## Установка
-  - Скачайте <a href='APK/ScheduleApp-v1.1.0.apk'>apk-файл</a>
+  - Скачайте <a href='APK/ScheduleApp-v1.1.1.apk'>apk-файл</a>
   - В настройках безопасности Вашего устройства включите установку из незивестных источников, если уже не сделали это
   - Устанвоите приложение
