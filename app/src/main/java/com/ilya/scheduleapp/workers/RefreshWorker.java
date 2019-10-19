@@ -24,20 +24,26 @@ public class RefreshWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        ScheduleContainer result = new ScheduleContainer();
+        ScheduleContainer schedule = findSchedule();
+
+        if (StorageHelper.isScheduleChanged(context, schedule)) {
+            StorageHelper.addScheduleToShared(context, schedule);
+            NotificationHelper.showNotification(context);
+        }
+
+        return Result.success();
+    }
+
+    private ScheduleContainer findSchedule() {
         try {
-            result = new ScheduleParser(context).execute().get();
+            return new ScheduleParser(context).execute().get();
         } catch (ExecutionException e) {
             e.printStackTrace();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        if (StorageHelper.isScheduleChanged(context, result)) {
-            StorageHelper.addScheduleToShared(context, result);
-            NotificationHelper.showNotification(context);
-        }
-
-        return Result.success();
+        return new ScheduleContainer();
     }
+
 }

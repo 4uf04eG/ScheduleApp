@@ -47,7 +47,6 @@
             android:text="@string/toolbar_week_w1"
             style="@style/WeekChangeButtonTheme" />
 
-
         <RadioButton
             android:id="@+id/toolbar_weeks_second"
             android:layout_width="wrap_content"

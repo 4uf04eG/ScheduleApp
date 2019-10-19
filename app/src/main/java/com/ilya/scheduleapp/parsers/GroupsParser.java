@@ -4,8 +4,8 @@ package com.ilya.scheduleapp.parsers;
 import android.content.Context;
 import android.os.AsyncTask;
 
+import com.ilya.scheduleapp.R;
 import com.ilya.scheduleapp.containers.GroupsContainer;
-import com.ilya.scheduleapp.helpers.StorageHelper;
 import com.ilya.scheduleapp.listeners.GroupsAsyncTaskListener;
 
 import org.jsoup.Jsoup;
@@ -16,7 +16,6 @@ import org.jsoup.select.Elements;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.URL;
-import java.util.Set;
 
 public class GroupsParser extends AsyncTask<Void, Integer, GroupsContainer> {
     private static final String GROUP_LINKS = "group_links";
@@ -39,9 +38,7 @@ public class GroupsParser extends AsyncTask<Void, Integer, GroupsContainer> {
     @Override
     protected GroupsContainer doInBackground(Void... voids) {
         GroupsContainer groups = new GroupsContainer();
-        Set<String> urls = StorageHelper.findStringSetInShared(context.get(), GROUP_LINKS);
-
-        if (urls == null) return groups;
+        String[] urls = context.get().getResources().getStringArray(R.array.default_group_links);
 
         try {
             for (String url : urls) {

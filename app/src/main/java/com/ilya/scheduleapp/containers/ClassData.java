@@ -4,6 +4,8 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
+import com.ilya.scheduleapp.BuildConfig;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -98,6 +100,11 @@ class Patterns {
     private static final String secondClassRoom = classRoom + ")?";
 
     static String generateUnitedPattern() {
+        if (BuildConfig.DEBUG) {
+            Log.d("regex", position + type + name + teacher + classRoom +
+                    secondName + teacher + secondClassRoom);
+        }
+
         return position + type + name + teacher + classRoom +
                 secondName + teacher + secondClassRoom;
     }

@@ -46,6 +46,7 @@ public class AllGroupsActivity extends AppCompatActivity implements GroupsAsyncT
         groupsView.setAdapter(new GroupsAdapter());
 
         refreshLayout = findViewById(R.id.swipe_refresh);
+        refreshLayout.setColorSchemeResources(R.color.colorAccent);
         refreshLayout.setOnRefreshListener(this::tryLoadAllGroups);
 
         isGroupChange = getIntent().getBooleanExtra("change_group", false);

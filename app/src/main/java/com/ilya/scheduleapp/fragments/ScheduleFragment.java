@@ -67,6 +67,7 @@ public class ScheduleFragment extends Fragment implements ScheduleAsyncTaskListe
         tabs.setupWithViewPager(viewPager);
 
         refreshLayout = view.findViewById(R.id.swipe_refresh);
+        refreshLayout.setColorSchemeResources(R.color.colorAccent);
         refreshLayout.setOnRefreshListener(() -> tryLoadSchedule(false));
 
         view.findViewById(R.id.retry_refresh_button).setOnClickListener(v -> onRefreshButtonClick());

@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.util.Locale;
-import java.util.Objects;
 
 public class ScheduleParser extends AsyncTask<Boolean, Integer, ScheduleContainer> {
     private static final String SCHEDULE_LINK = "schedule_link";
@@ -70,7 +69,7 @@ public class ScheduleParser extends AsyncTask<Boolean, Integer, ScheduleContaine
             String expectedName = StorageHelper.findStringInShared(context.get(), GROUP_NAME);
             String actualName = GroupNameParser.getNameFromDoc(doc);
 
-            if (!Objects.equals(expectedName, actualName)) isGroupLinkChanged = true;
+            if (expectedName != null && !expectedName.equals(actualName)) isGroupLinkChanged = true;
             else tables = doc.select("table");
         } catch (IOException e) {
             e.printStackTrace();

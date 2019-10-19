@@ -19,7 +19,7 @@
         <SwitchPreference
             app:icon="@drawable/more_ic_week_switch_24dp"
             app:key="auto_week_change"
-            app:title="@string/more_auto_change_week"
+            app:title="@string/more_auto_set_week"
             app:useSimpleSummaryProvider="true" />
 
         <com.ilya.scheduleapp.ui.WeekPreference app:title="@string/more_study_week" />

@@ -30,7 +30,7 @@
     <string name="more_week_selector">Select a study week</string>
     <string name="more_update_frequency">Schedule update frequency</string>
     <string name="more_update_frequency_selector">Select an update frequency</string>
-    <string name="more_auto_change_week">Change week automatically</string>
+    <string name="more_auto_set_week">Set right week automatically</string>
 
     <string name="confirmation">OK</string>
     <string name="cancellation">Cancel</string>

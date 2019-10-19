@@ -57,10 +57,16 @@ public class ScheduleListAdapter extends RecyclerView.Adapter<ScheduleListAdapte
         viewHolder.classRoom.setText(rooms[0]);
 
         if (teachers[0] != null) {
+            viewHolder.teacher.setVisibility(View.VISIBLE);
             viewHolder.teacher.setText(fixInitials(teachers[0]));
         } else {
             viewHolder.teacher.setVisibility(View.GONE);
         }
+
+        viewHolder.secondTitle.setVisibility(View.GONE);
+        viewHolder.divider.setVisibility(View.GONE);
+        viewHolder.secondTeacher.setVisibility(View.GONE);
+        viewHolder.secondClassRoom.setVisibility(View.GONE);
 
         if (teachers[1] != null) {
             if (names[1] != null) {

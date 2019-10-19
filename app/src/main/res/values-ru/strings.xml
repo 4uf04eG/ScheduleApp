@@ -31,7 +31,7 @@
     <string name="more_week_selector">Выберите учебную неделю</string>
     <string name="more_update_frequency">Частота обновления расписания</string>
     <string name="more_update_frequency_selector">Выберите частоту обновления расписания</string>
-    <string name="more_auto_change_week">Переключать неделю автоматически</string>
+    <string name="more_auto_set_week">Переключать на текующую неделю</string>
 
     <string name="confirmation">Принять</string>
     <string name="cancellation">Отменить</string>

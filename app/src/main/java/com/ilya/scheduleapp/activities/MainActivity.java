@@ -37,7 +37,6 @@ import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity
         implements BottomNavigationView.OnNavigationItemSelectedListener {
-    private static final String GROUP_LINKS = "group_links";
     private static final String GROUP_NAME = "group_name";
     private static final String SCHEDULE_LINK = "schedule_link";
     private static final String NUM_OF_WEEK = "current_week";
@@ -215,44 +214,35 @@ public class MainActivity extends AppCompatActivity
         }).start();
     }
 
+    //For now it works only with two weeks
     private void setRightWeek() {
-        int storedWeekOfYear = StorageHelper.findIntInShared(this, WEEK_OF_YEAR);
+        int firstWeekOfFirstSemester = 36;
+        int firstWeekOfSecondSemester = 6;
+        int monthOfSeptember = 9;
+        int weekDiff;
 
         Calendar calendar = Calendar.getInstance(Locale.UK);
-        calendar.add(Calendar.DATE, 1);
-        int yesterdayWeekOfYear = calendar.get(Calendar.WEEK_OF_YEAR);
 
-        if (storedWeekOfYear == 0) {
-            StorageHelper.addToShared(this, WEEK_OF_YEAR, yesterdayWeekOfYear);
-            return;
+        if (calendar.get(Calendar.MONTH) < monthOfSeptember) {
+            weekDiff = calendar.get(Calendar.WEEK_OF_YEAR) - firstWeekOfSecondSemester;
+        } else {
+            weekDiff = calendar.get(Calendar.WEEK_OF_YEAR) - firstWeekOfFirstSemester;
         }
 
-        if (storedWeekOfYear % 2 != yesterdayWeekOfYear % 2) {
-            int studyWeek = StorageHelper.findIntInShared(this, NUM_OF_WEEK);
-            int weekCount = StorageHelper.findIntInShared(this, WEEK_COUNT);
-
-            if (studyWeek + 1 < weekCount) {
-                StorageHelper.addToShared(this, NUM_OF_WEEK, studyWeek + 1);
-            } else {
-                StorageHelper.addToShared(this, NUM_OF_WEEK, 0);
-            }
-
+        if (StorageHelper.findIntInShared(this, NUM_OF_WEEK) != weekDiff % 2) {
+            StorageHelper.addToShared(this, NUM_OF_WEEK, weekDiff % 2);
             ScheduleFragment fragment =
                     (ScheduleFragment) getSupportFragmentManager().findFragmentByTag("schedule");
 
             if (fragment != null) {
                 fragment.addScheduleToView(StorageHelper.findScheduleInShared(this));
             }
-
-            StorageHelper.addToShared(this, WEEK_OF_YEAR, yesterdayWeekOfYear);
         }
     }
 
     private void setInitialParameters() {
-        String[] urls = getResources().getStringArray(R.array.default_group_links);
         int defaultUpdateFrequency = UpdateFrequencies.EVERY_MONTH.ordinal();
 
-        StorageHelper.addToShared(this, GROUP_LINKS, urls);
         StorageHelper.addToShared(this, NUM_OF_WEEK, 0);
         StorageHelper.addToShared(this, UPDATE_FREQUENCY, defaultUpdateFrequency);
         StorageHelper.addToShared(this, AUTO_WEEK_CHANGE, true);
