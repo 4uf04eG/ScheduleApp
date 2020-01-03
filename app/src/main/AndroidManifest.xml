@@ -41,7 +41,7 @@
                 <data
                     android:host="www.ulstu.ru"
                     android:pathPattern="/schedule/students/part.*/.*.htm"
-                    android:scheme="http" />
+                    android:scheme="https" />
             </intent-filter>
 
         </activity>

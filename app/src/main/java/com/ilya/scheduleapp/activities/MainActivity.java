@@ -42,8 +42,6 @@ public class MainActivity extends AppCompatActivity
     private static final String NUM_OF_WEEK = "current_week";
     private static final String UPDATE_FREQUENCY = "schedule_update_frequency";
     private static final String AUTO_WEEK_CHANGE = "auto_week_change";
-    private static final String WEEK_OF_YEAR ="week_number";
-    private static final String WEEK_COUNT = "week_count";
 
     private static long bottomNavLastClickTime;
     private static boolean isGroupSelectorOpened;
@@ -192,7 +190,7 @@ public class MainActivity extends AppCompatActivity
 
     private void handleUrlIntent() {
         Uri appLinkData = getIntent().getData();
-        String regex = "http://www.ulstu.ru/schedule/students/part\\d+/\\d+.htm";
+        String regex = "https://www.ulstu.ru/schedule/students/part\\d+/\\d+.htm";
 
         if (appLinkData != null && appLinkData.toString().matches(regex)) {
             StorageHelper.addToShared(this, SCHEDULE_LINK, appLinkData.toString());
@@ -222,11 +220,14 @@ public class MainActivity extends AppCompatActivity
         int weekDiff;
 
         Calendar calendar = Calendar.getInstance(Locale.UK);
+        calendar.add(Calendar.DATE, 1);
 
-        if (calendar.get(Calendar.MONTH) < monthOfSeptember) {
+        if (calendar.get(Calendar.MONTH) >= monthOfSeptember) {
+            weekDiff = calendar.get(Calendar.WEEK_OF_YEAR) - firstWeekOfFirstSemester;
+        } else if (calendar.get(Calendar.WEEK_OF_YEAR) >= 6){
             weekDiff = calendar.get(Calendar.WEEK_OF_YEAR) - firstWeekOfSecondSemester;
         } else {
-            weekDiff = calendar.get(Calendar.WEEK_OF_YEAR) - firstWeekOfFirstSemester;
+            weekDiff = calendar.get(Calendar.WEEK_OF_YEAR);
         }
 
         if (StorageHelper.findIntInShared(this, NUM_OF_WEEK) != weekDiff % 2) {
