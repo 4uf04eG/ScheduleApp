@@ -1,6 +1,7 @@
 package com.ilya.scheduleapp.parsers;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
 
 import com.ilya.scheduleapp.containers.ScheduleContainer;
@@ -17,10 +18,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
@@ -37,19 +35,23 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 public class ScheduleParserTests {
     @Mock
     Context context;
+    @Mock
+    Resources resources;
 
     private List<String> groups;
 
+
     @Before
     public void setUp() {
-        Set<String> links = new HashSet<>(Arrays.asList(
-                "http://www.ulstu.ru/schedule/students/part1/raspisan.htm",
-                "http://www.ulstu.ru/schedule/students/part2/raspisan.htm",
-                "http://www.ulstu.ru/schedule/students/part3/raspisan.htm"));
+        String[] links = new String[] {
+                "http://www.ulstu.ru/schedule/students/part1/raspisan.html",
+                "http://www.ulstu.ru/schedule/students/part2/raspisan.html",
+                "http://www.ulstu.ru/schedule/students/part3/raspisan.html"
+        };
 
         mockStatic(StorageHelper.class);
-        when(StorageHelper.findStringSetInShared(any(Context.class), anyString())).
-                thenReturn(links);
+        when(context.getResources()).thenReturn(resources);
+        when(resources.getStringArray(anyInt())).thenReturn(links);
 
         groups = new GroupsParser(context).doInBackground().getAllLinks();
     }

@@ -35,9 +35,9 @@
     </string-array>
 
     <string-array name="default_group_links">
-        <item>https://www.ulstu.ru/schedule/students/part1/raspisan.htm</item>
-        <item>https://www.ulstu.ru/schedule/students/part2/raspisan.htm</item>
-        <item>https://www.ulstu.ru/schedule/students/part3/raspisan.htm</item>
+        <item>https://www.ulstu.ru/schedule/students/part1/raspisan.html</item>
+        <item>https://www.ulstu.ru/schedule/students/part2/raspisan.html</item>
+        <item>https://www.ulstu.ru/schedule/students/part3/raspisan.html</item>
     </string-array>
 
 </resources>
